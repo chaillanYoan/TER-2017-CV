@@ -1,4 +1,6 @@
 import java.io.IOException;
+import java.util.ArrayList;
+
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
@@ -27,8 +29,39 @@ public class Test {
 	int ligneLongue;//ligne la plus longue
 	String tableur[][];//tableau recevant les données pour les cv a creer.
 	
+	private ArrayList<Template> templates = new ArrayList<Template>();//liste des templates
+	private String outputFolder, excelPath;//dossier de sortie et chemin du .xls
 	
-	public static void main(String[] args) throws IOException, EncryptedDocumentException, InvalidFormatException {
+	
+	public void init(ArrayList<Template> t, String output, String excel){
+		/*le caractere "\" est special et il faut le signaler avec un \ avant donc ça donne : "\\"*/
+		for(int i=0; i<t.size(); i++)
+			t.set(i, new Template(t.get(i).filename.replace("\\","\\\\"),t.get(i).filepath.replace("\\","\\\\")));
+		
+		for(int i=0; i<t.size(); i++)
+			System.out.println(t.get(i).filepath);
+		
+		this.templates = t;
+		this.outputFolder = output.replace("\\","\\\\");;
+		this.excelPath = excel.replace("\\","\\\\");
+	}
+	
+	
+	public void generate() throws EncryptedDocumentException, InvalidFormatException, IOException{
+		Test olol = new Test();
+		
+		//olol.exec("TEST EXCEL.xls");
+		ExcelParser ep = new ExcelParser();
+		ep.getSourceExcel(this.excelPath);
+		CVCreator cvc = new CVCreator(ep);
+		cvc.createCVData(2, 3);//2offres 3CV/offre
+		olol.tempprint(cvc);
+		cvc.createCV(1, templates.get(0).filepath/*"TEST CV - NOM.doc"*/,outputFolder);
+	}
+	
+	
+	
+	/*public static void main(String[] args) throws IOException, EncryptedDocumentException, InvalidFormatException {
 		Test olol = new Test();
 		
 		//olol.exec("TEST EXCEL.xls");
@@ -38,7 +71,7 @@ public class Test {
 		cvc.createCVData(2, 3);//2offres 3CV/offre
 		olol.tempprint(cvc);
 		cvc.createCV(1, "TEST CV - NOM.doc");
-	}
+	}*/
 	
 	public void tempprint(CVCreator cvc){
 		System.out.println();
@@ -53,7 +86,7 @@ public class Test {
 		
 	}
 	
-
+	
 
 	
 

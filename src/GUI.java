@@ -3,15 +3,23 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.SpringLayout;
 import javax.swing.JLabel;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.util.ArrayList;
+
 import javax.swing.UIManager;
 
 public class GUI {
@@ -22,7 +30,8 @@ public class GUI {
 	private JTextField textFieldExcel;
 	private DefaultTableModel model;
 	private JTable table;
-	private String templateName, templatePath, templateOutput;
+	private String templateName, templatePath, outputFolder, excelPath;
+	private ArrayList<Template> templates = new ArrayList<Template>();
 
 	/**
 	 * Launch the application.
@@ -58,7 +67,6 @@ public class GUI {
 	private void initialize() {
 		frmTer = new JFrame();
 		frmTer.setTitle("TER 2017");
-		frmTer.setResizable(false);
 		frmTer.setBounds(100, 100, 550, 720);
 		frmTer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		SpringLayout springLayout = new SpringLayout();
@@ -83,24 +91,39 @@ public class GUI {
 		frmTer.getContentPane().add(lblDossierDeDestination);
 		
 		
+		/*Bouton pour générer les CVs*/
 		JButton btnGnrerLesCvs = new JButton("Générer les CVs");
-		springLayout.putConstraint(SpringLayout.NORTH, btnGnrerLesCvs, 593, SpringLayout.NORTH, frmTer.getContentPane());
-		springLayout.putConstraint(SpringLayout.WEST, btnGnrerLesCvs, 163, SpringLayout.WEST, frmTer.getContentPane());
-		springLayout.putConstraint(SpringLayout.SOUTH, btnGnrerLesCvs, -47, SpringLayout.SOUTH, frmTer.getContentPane());
-		springLayout.putConstraint(SpringLayout.EAST, btnGnrerLesCvs, -185, SpringLayout.EAST, frmTer.getContentPane());
+		btnGnrerLesCvs.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				Test testing = new Test();
+				testing.init(templates, outputFolder, excelPath);
+				try {
+					testing.generate();
+				} catch (EncryptedDocumentException | InvalidFormatException | IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		springLayout.putConstraint(SpringLayout.NORTH, btnGnrerLesCvs, -94, SpringLayout.SOUTH, frmTer.getContentPane());
+		springLayout.putConstraint(SpringLayout.SOUTH, btnGnrerLesCvs, -50, SpringLayout.SOUTH, frmTer.getContentPane());
 		frmTer.getContentPane().add(btnGnrerLesCvs);
 		
 		
+		
 		textFieldOutput = new JTextField();
+		springLayout.putConstraint(SpringLayout.WEST, btnGnrerLesCvs, 0, SpringLayout.WEST, textFieldOutput);
+		springLayout.putConstraint(SpringLayout.EAST, btnGnrerLesCvs, 160, SpringLayout.WEST, textFieldOutput);
 		textFieldOutput.setEditable(false);
 		springLayout.putConstraint(SpringLayout.NORTH, textFieldOutput, -3, SpringLayout.NORTH, lblDossierDeDestination);
 		springLayout.putConstraint(SpringLayout.WEST, textFieldOutput, 6, SpringLayout.EAST, lblDossierDeDestination);
-		springLayout.putConstraint(SpringLayout.EAST, textFieldOutput, 176, SpringLayout.EAST, lblDossierDeDestination);
 		frmTer.getContentPane().add(textFieldOutput);
 		textFieldOutput.setColumns(10);
 		
 		
 		textFieldTemplate = new JTextField();
+		springLayout.putConstraint(SpringLayout.EAST, textFieldOutput, 0, SpringLayout.EAST, textFieldTemplate);
 		textFieldTemplate.setEditable(false);
 		springLayout.putConstraint(SpringLayout.WEST, textFieldTemplate, 6, SpringLayout.EAST, lblTemplatesDeCv);
 		springLayout.putConstraint(SpringLayout.EAST, textFieldTemplate, -230, SpringLayout.EAST, frmTer.getContentPane());
@@ -129,6 +152,7 @@ public class GUI {
 				templateName = explorer.getFilename();
 				templatePath = explorer.getFilepath();
 				
+				
 				textFieldTemplate.setText(templatePath);
 				
 				//System.out.println("nom fichier récupéré = "+templateName);
@@ -143,11 +167,10 @@ public class GUI {
 		btnParcourirExcel.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				String path = new String();
 				Explorer explorer = new Explorer();
-				path = explorer.getFilepath();
+				excelPath = explorer.getFilepath();
 				
-				textFieldExcel.setText(path);
+				textFieldExcel.setText(excelPath);
 			}
 		});
 		springLayout.putConstraint(SpringLayout.EAST, btnParcourirTemplate, 0, SpringLayout.EAST, btnParcourirExcel);
@@ -158,38 +181,39 @@ public class GUI {
 		
 		
 		JButton btnParcourirOutput = new JButton("Parcourir");
+		springLayout.putConstraint(SpringLayout.EAST, btnParcourirOutput, 100, SpringLayout.WEST, btnParcourirTemplate);
 		btnParcourirOutput.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				String folder = new String();
 				Explorer explorer = new Explorer("DIRECTORY");
-				folder = explorer.getFilepath();
-				templateOutput = folder;
+				folder = explorer.getFolder();
+				outputFolder = folder;
 						
-				textFieldOutput.setText(folder);
+				textFieldOutput.setText(outputFolder);
 			}
 		});
-		springLayout.putConstraint(SpringLayout.NORTH, btnParcourirOutput, 0, SpringLayout.NORTH, textFieldOutput);
 		springLayout.putConstraint(SpringLayout.WEST, btnParcourirOutput, 0, SpringLayout.WEST, btnParcourirTemplate);
-		springLayout.putConstraint(SpringLayout.EAST, btnParcourirOutput, -114, SpringLayout.EAST, frmTer.getContentPane());
 		frmTer.getContentPane().add(btnParcourirOutput);
 		
 		
 		JScrollPane scrollPanelListeTemplate = new JScrollPane();
+		springLayout.putConstraint(SpringLayout.SOUTH, scrollPanelListeTemplate, -36, SpringLayout.NORTH, textFieldOutput);
+		springLayout.putConstraint(SpringLayout.NORTH, btnParcourirOutput, 36, SpringLayout.SOUTH, scrollPanelListeTemplate);
 		springLayout.putConstraint(SpringLayout.WEST, scrollPanelListeTemplate, 31, SpringLayout.WEST, frmTer.getContentPane());
-		springLayout.putConstraint(SpringLayout.SOUTH, scrollPanelListeTemplate, -222, SpringLayout.SOUTH, frmTer.getContentPane());
 		springLayout.putConstraint(SpringLayout.EAST, scrollPanelListeTemplate, -33, SpringLayout.EAST, frmTer.getContentPane());
 		frmTer.getContentPane().add(scrollPanelListeTemplate);
 		
 		
 		JLabel lblListeDesTemplates = new JLabel("Liste des templates");
 		springLayout.putConstraint(SpringLayout.NORTH, scrollPanelListeTemplate, 6, SpringLayout.SOUTH, lblListeDesTemplates);
+		springLayout.putConstraint(SpringLayout.NORTH, lblListeDesTemplates, 22, SpringLayout.SOUTH, textFieldTemplate);
+		springLayout.putConstraint(SpringLayout.SOUTH, lblListeDesTemplates, 38, SpringLayout.SOUTH, textFieldTemplate);
 		
 		
 		/*Tableau des templates*/
 		model = new DefaultTableModel(
 				new Object[][] {
-					{null, null, null}
 				},
 				new String[] {
 					"Fichier", "Chemin", ""
@@ -204,10 +228,21 @@ public class GUI {
 		table.getColumnModel().getColumn(1).setMinWidth(Math.round(tableWidth*50/100));
 		table.getColumnModel().getColumn(2).setMinWidth(Math.round(tableWidth*25/100));
 		table.setRowHeight(25);
+		
+		/*Action de bouton supprimer du tableau*/
+		Action delete = new AbstractAction()
+		{
+		    public void actionPerformed(ActionEvent e)
+		    {
+		        JTable table = (JTable)e.getSource();
+		        int modelRow = Integer.valueOf( e.getActionCommand() );
+		        ((DefaultTableModel)table.getModel()).removeRow(modelRow);
+		        templates.remove(modelRow);
+		    }
+		};
+		ButtonColumn buttonColumn = new ButtonColumn(table, delete, 2);
+		
 		scrollPanelListeTemplate.setViewportView(table);
-		
-		
-		springLayout.putConstraint(SpringLayout.SOUTH, lblListeDesTemplates, -488, SpringLayout.SOUTH, frmTer.getContentPane());
 		springLayout.putConstraint(SpringLayout.WEST, lblListeDesTemplates, 106, SpringLayout.WEST, frmTer.getContentPane());
 		frmTer.getContentPane().add(lblListeDesTemplates);
 		
@@ -227,23 +262,37 @@ public class GUI {
 	
 	/**Fonction qui ajoute les templates au tableau**/
 	public void addListeCV(String name, String path){
-			
-		for(int i=0; i<table.getRowCount(); i++){
-			//System.out.println("i="+i+" cell="+table.getValueAt(i, 0));
-				
-			if(table.getValueAt(i, 0) == null){
-				table.setValueAt(name, i, 0);
-				table.setValueAt(path, i, 1);
-				break;
-			}
-			else if(table.getValueAt(i, 0) != null){
-				//System.out.println("new row");
-				model.addRow(new Object[]{name, path});
-				break;
+		
+		/*Ajout a l'arrayList*/
+		Template t = new Template(name,path);
+		templates.add(t);
+		
+		/*Ajout au GUI*/
+		if(table.getRowCount() == 0){
+			model.addRow(new Object[]{name, path, "Supprimer"});
+		}
+		else{
+			for(int i=0; i<table.getRowCount(); i++){
+				//System.out.println("i="+i+" cell="+table.getValueAt(i, 0));
+					
+				if(table.getValueAt(i, 0) == null){
+					table.setValueAt(name, i, 0);
+					table.setValueAt(path, i, 1);
+					table.setValueAt("Supprimer", i, 2);
+					break;
+				}
+				else if(table.getValueAt(i, 0) != null){
+					//System.out.println("new row");
+					model.addRow(new Object[]{name, path, "Supprimer"});
+					break;
+				}
 			}
 		}
 		//System.out.println("");
 	}
+	
+	
+	
 	
 	
 }

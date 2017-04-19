@@ -49,7 +49,7 @@ public class CVCreator {
 	
 	/** Fonction pour creer les CVs 
 	 * @throws IOException **/
-	public void createCV(int nb, String templateName) throws IOException{
+	public void createCV(int nb, String templateName, String outputFolder) throws IOException{
 	    
 	   	System.out.println("Creation CV "+(nb+1));
 	   	
@@ -85,7 +85,7 @@ public class CVCreator {
 				 }
 			 } 
 		 } 
-		 String outputFileName = "TEST CV - "+tableur[nb][1].toUpperCase()+".doc";
+		 String outputFileName = outputFolder+"\\"+"TEST CV - "+tableur[nb][1].toUpperCase()+".doc";
 		 //System.out.println(doc.getDocumentText());
 		 doc.write(new File(outputFileName));
 		 doc.close(); 

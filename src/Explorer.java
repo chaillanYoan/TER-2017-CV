@@ -1,5 +1,6 @@
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.io.File;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -53,6 +54,8 @@ public class Explorer extends JFrame {
 		contentPane.setLayout(new BorderLayout(0, 0));
 		
 		JFileChooser fileChooser = new JFileChooser();
+		File workingDirectory = new File(System.getProperty("user.dir"));
+		fileChooser.setCurrentDirectory(workingDirectory);
 		contentPane.add(fileChooser, BorderLayout.CENTER);
 		int retour=fileChooser.showOpenDialog(contentPane);
 		if(retour==JFileChooser.APPROVE_OPTION){
@@ -62,8 +65,6 @@ public class Explorer extends JFrame {
 		   // chemin absolu du fichier choisi
 			filepath = fileChooser.getSelectedFile().getAbsolutePath();
 			
-			//chemin du dossier
-			folder = fileChooser.getCurrentDirectory().getAbsolutePath();
 		}
 		else{// pas de fichier choisi
 			//System.out.println("Pas de fichier selectionné");
@@ -81,16 +82,18 @@ public class Explorer extends JFrame {
 		contentPane.setLayout(new BorderLayout(0, 0));
 		
 		JFileChooser fileChooser = new JFileChooser();
+		File workingDirectory = new File(System.getProperty("user.dir"));
+		fileChooser.setCurrentDirectory(workingDirectory);
 		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		fileChooser.setAcceptAllFileFilterUsed(false);
 		contentPane.add(fileChooser, BorderLayout.CENTER);
 		int retour=fileChooser.showOpenDialog(contentPane);
 		if(retour==JFileChooser.APPROVE_OPTION){
 		   
-			System.out.println("getCurrentDirectory(): "+  fileChooser.getCurrentDirectory());
+			//System.out.println("getCurrentDirectory(): "+  fileChooser.getCurrentDirectory());
 			
 			//chemin du dossier
-			folder = fileChooser.getCurrentDirectory().getAbsolutePath();
+			folder = fileChooser.getSelectedFile().getAbsolutePath();
 		}
 		else{// pas de fichier choisi
 			//System.out.println("Pas de fichier selectionné");
