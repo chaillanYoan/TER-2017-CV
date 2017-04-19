@@ -35,7 +35,7 @@ public class Test {
 		ExcelParser ep = new ExcelParser();
 		ep.getSourceExcel("EXCEL.xls");
 		CVCreator cvc = new CVCreator(ep);
-		cvc.createCVData(2, 3);
+		cvc.createCVData(2, 3);//2offres 3CV/offre
 		olol.tempprint(cvc);
 		cvc.createCV(1, "TEST CV - NOM.doc");
 	}

@@ -72,7 +72,7 @@ public class CVCreator {
 					 //character run 
 					 CharacterRun run = p.getCharacterRun(z); 
 					 //character run text 
-					// String text = run.text(); 
+					 //String text = run.text(); 
 					 //System.out.println(text.toString());
 					 for(i=0;i < ep.getMaxLineLength(); i++){
 						 String txt = tableur[0][i];
