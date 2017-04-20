@@ -42,7 +42,7 @@ public class Test {
 			System.out.println(t.get(i).filepath);
 		
 		this.templates = t;
-		this.outputFolder = output.replace("\\","\\\\");;
+		this.outputFolder = output.replace("\\","\\\\");
 		this.excelPath = excel.replace("\\","\\\\");
 	}
 	
@@ -56,7 +56,9 @@ public class Test {
 		CVCreator cvc = new CVCreator(ep);
 		cvc.createCVData(2, 3);//2offres 3CV/offre
 		olol.tempprint(cvc);
-		cvc.createCV(1, templates.get(0).filepath/*"TEST CV - NOM.doc"*/,outputFolder);
+		
+		//			nombre	 	template 					output
+		cvc.createCV(1, this.templates.get(0).filepath, this.outputFolder);
 	}
 	
 	

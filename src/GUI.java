@@ -1,4 +1,5 @@
 import java.awt.EventQueue;
+import java.awt.Point;
 
 import javax.swing.JFrame;
 import javax.swing.SpringLayout;
@@ -73,7 +74,7 @@ public class GUI {
 		frmTer.getContentPane().setLayout(springLayout);
 		
 		
-		JLabel lblFichierExcelxsl = new JLabel("Fichier excel (.xsl) :");
+		JLabel lblFichierExcelxsl = new JLabel("Fichier excel (.xls) :");
 		frmTer.getContentPane().add(lblFichierExcelxsl);
 		
 		
@@ -96,13 +97,27 @@ public class GUI {
 		btnGnrerLesCvs.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				Test testing = new Test();
-				testing.init(templates, outputFolder, excelPath);
-				try {
-					testing.generate();
-				} catch (EncryptedDocumentException | InvalidFormatException | IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+				if(excelPath == null){
+					Point p = frmTer.getLocation();
+					Popup.pop(p,"Veuillez selectionner un fichier excel (.xls)");
+				}
+				else if(templates.size() == 0){
+					Point p = frmTer.getLocation();
+					Popup.pop(p,"Veuillez selectionner un template de CV (.doc).");
+				}
+				else if(outputFolder == null){
+					Point p = frmTer.getLocation();
+					Popup.pop(p,"Veuillez selectionner un dossier de sortie.");
+				}
+				else{
+					Test testing = new Test();
+					testing.init(templates, outputFolder, excelPath);
+					try {
+						testing.generate();
+					} catch (EncryptedDocumentException | InvalidFormatException | IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
 			}
 		});
@@ -230,6 +245,7 @@ public class GUI {
 		table.setRowHeight(25);
 		
 		/*Action de bouton supprimer du tableau*/
+		@SuppressWarnings("serial")
 		Action delete = new AbstractAction()
 		{
 		    public void actionPerformed(ActionEvent e)
@@ -240,6 +256,7 @@ public class GUI {
 		        templates.remove(modelRow);
 		    }
 		};
+		@SuppressWarnings("unused")
 		ButtonColumn buttonColumn = new ButtonColumn(table, delete, 2);
 		
 		scrollPanelListeTemplate.setViewportView(table);
