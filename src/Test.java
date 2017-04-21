@@ -32,6 +32,8 @@ public class Test {
 	private ArrayList<Template> templates = new ArrayList<Template>();//liste des templates
 	private String outputFolder, excelPath;//dossier de sortie et chemin du .xls
 	
+	private CVCreator cvc;
+	
 	
 	public void init(ArrayList<Template> t, String output, String excel){
 		/*le caractere "\" est special et il faut le signaler avec un \ avant donc ça donne : "\\"*/
@@ -47,17 +49,23 @@ public class Test {
 	}
 	
 	
-	public void generate() throws EncryptedDocumentException, InvalidFormatException, IOException{
-		Test olol = new Test();
-		
-		//olol.exec("TEST EXCEL.xls");
+	/*ancienne fonction main() ( avec create() )
+	 *
+	 * TODO mettre des argument pour choisir le nb d'offre et CV/offres
+	 * et du coup verifier si assez de données pour le nb de CVs
+	 */
+	public String[][] generate() throws EncryptedDocumentException, InvalidFormatException, IOException{
 		ExcelParser ep = new ExcelParser();
 		ep.getSourceExcel(this.excelPath);
-		CVCreator cvc = new CVCreator(ep);
+		cvc = new CVCreator(ep);
 		cvc.createCVData(2, 3);//2offres 3CV/offre
-		olol.tempprint(cvc);
 		
-		//			nombre	 	template 					output
+		this.tempprint(cvc);
+		return cvc.getTableur();
+	}
+	
+	
+	public void create() throws IOException{
 		cvc.createCV(1, this.templates.get(0).filepath, this.outputFolder);
 	}
 	

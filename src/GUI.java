@@ -30,13 +30,23 @@ public class GUI {
 	
 	private CardLayout cardLayout;
 	private JFrame frmTer;
+	
 	private JTextField textFieldOutput;
 	private JTextField textFieldTemplate;
 	private JTextField textFieldExcel;
+	
 	private DefaultTableModel model;
 	private JTable table;
+	
 	private String templateName, templatePath, outputFolder, excelPath;
 	private ArrayList<Template> templates = new ArrayList<Template>();
+	
+	private DefaultTableModel modelRandom;
+	private JTable tableRandom;
+	
+	private JButton gotoP2;
+	
+	private Test testing;
 
 	/**
 	 * Launch the application.
@@ -69,6 +79,7 @@ public class GUI {
 	/**
 	 * Initialize the contents of the frame.
 	 */
+	@SuppressWarnings("serial")
 	private void initialize() {
 		cardLayout = new CardLayout(0, 0);
 		frmTer = new JFrame();
@@ -86,6 +97,7 @@ public class GUI {
 		 * >next panel will show the table
 		 */
 		JPanel panel1 = new JPanel();
+		panel1.setName("PANEL1");
 		frmTer.getContentPane().add(panel1, "PANEL1");
 		SpringLayout sl_panel1 = new SpringLayout();
 		panel1.setLayout(sl_panel1);
@@ -104,16 +116,16 @@ public class GUI {
 		JLabel lblTemplatesDeCv = new JLabel("Templates de CV (.doc) :");
 		sl_panel1.putConstraint(SpringLayout.NORTH, lblTemplatesDeCv, 34, SpringLayout.SOUTH, lblFichierExcelxsl);
 		panel1.add(lblTemplatesDeCv);
-		JButton btnGnrerLesCvs = new JButton("Générer les CVs");
-		sl_panel1.putConstraint(SpringLayout.SOUTH, lblDossierDeDestination, -44, SpringLayout.NORTH, btnGnrerLesCvs);
-		sl_panel1.putConstraint(SpringLayout.WEST, btnGnrerLesCvs, 70, SpringLayout.WEST, panel1);
-		sl_panel1.putConstraint(SpringLayout.SOUTH, btnGnrerLesCvs, -33, SpringLayout.SOUTH, panel1);
-		panel1.add(btnGnrerLesCvs);
+		JButton btnRandomisation = new JButton("Randomisation");
+		sl_panel1.putConstraint(SpringLayout.SOUTH, lblDossierDeDestination, -44, SpringLayout.NORTH, btnRandomisation);
+		sl_panel1.putConstraint(SpringLayout.WEST, btnRandomisation, 70, SpringLayout.WEST, panel1);
+		sl_panel1.putConstraint(SpringLayout.SOUTH, btnRandomisation, -33, SpringLayout.SOUTH, panel1);
+		panel1.add(btnRandomisation);
 		
 		
 		textFieldOutput = new JTextField();
 		sl_panel1.putConstraint(SpringLayout.WEST, textFieldOutput, 171, SpringLayout.WEST, panel1);
-		sl_panel1.putConstraint(SpringLayout.SOUTH, textFieldOutput, -37, SpringLayout.NORTH, btnGnrerLesCvs);
+		sl_panel1.putConstraint(SpringLayout.SOUTH, textFieldOutput, -37, SpringLayout.NORTH, btnRandomisation);
 		sl_panel1.putConstraint(SpringLayout.EAST, lblDossierDeDestination, -12, SpringLayout.WEST, textFieldOutput);
 		panel1.add(textFieldOutput);
 		textFieldOutput.setEditable(false);
@@ -178,9 +190,19 @@ public class GUI {
 				new String[] {
 					"Fichier", "Chemin", ""
 				}
-			);
+			){
+				public boolean isCellEditable(int row, int column) {
+					if(column > 1)
+						return true;
+					else
+						return false;
+				}
+			};
+		table = new JTable();
+		table.setModel(model);
+		table.setBounds(377, 118, 480, 300);
+		table.setRowHeight(30);
 		/*Action de bouton supprimer du tableau*/
-		@SuppressWarnings("serial")
 		Action delete = new AbstractAction()
 		{
 		    public void actionPerformed(ActionEvent e)
@@ -191,10 +213,6 @@ public class GUI {
 		        templates.remove(modelRow);
 		    }
 		};
-		
-		table = new JTable(model);
-		table.setBounds(377, 118, 480, 300);
-		table.setRowHeight(30);
 		@SuppressWarnings("unused")
 		ButtonColumn buttonColumn = new ButtonColumn(table, delete, 2);
 		scrollPanelListeTemplate.setViewportView(table);
@@ -214,17 +232,21 @@ public class GUI {
 		sl_panel1.putConstraint(SpringLayout.EAST, btnAjouter, -23, SpringLayout.EAST, panel1);
 		panel1.add(btnAjouter);
 		
-		JButton btnNext = new JButton("NEXT");
-		sl_panel1.putConstraint(SpringLayout.WEST, btnNext, -219, SpringLayout.EAST, panel1);
-		sl_panel1.putConstraint(SpringLayout.EAST, btnNext, -160, SpringLayout.EAST, panel1);
-		btnNext.addMouseListener(new MouseAdapter() {
+		
+		gotoP2 = new JButton("Afficher random");
+		gotoP2.setEnabled(false);
+		sl_panel1.putConstraint(SpringLayout.NORTH, gotoP2, 0, SpringLayout.NORTH, btnRandomisation);
+		sl_panel1.putConstraint(SpringLayout.WEST, gotoP2, 0, SpringLayout.WEST, btnParcourirTemplate);
+		sl_panel1.putConstraint(SpringLayout.EAST, gotoP2, -69, SpringLayout.EAST, panel1);
+		gotoP2.setName("btnNext");
+		gotoP2.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				cardLayout.show(frmTer.getContentPane(),"PANEL2");
+				if(gotoP2.isEnabled())
+					cardLayout.show(frmTer.getContentPane(),"PANEL2");
 			}
 		});
-		sl_panel1.putConstraint(SpringLayout.SOUTH, btnNext, 0, SpringLayout.SOUTH, btnGnrerLesCvs);
-		panel1.add(btnNext);
+		panel1.add(gotoP2);
 		
 		
 		btnAjouter.addMouseListener(new MouseAdapter() {
@@ -277,10 +299,11 @@ public class GUI {
 		});
 		
 		
-		/*Bouton pour générer les CVs*/
-		btnGnrerLesCvs.addMouseListener(new MouseAdapter() {
+		/*Bouton pour Randomisations*/
+		btnRandomisation.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				/*TODO mettre les verif dans une fonction a part qui renvoie un boolean*/
 				if(excelPath == null){
 					Point p = frmTer.getLocation();
 					Popup.pop(p,"Veuillez selectionner un fichier excel (.xls)");
@@ -294,14 +317,17 @@ public class GUI {
 					Popup.pop(p,"Veuillez selectionner un dossier de sortie.");
 				}
 				else{
-					Test testing = new Test();
+					testing = new Test();
 					testing.init(templates, outputFolder, excelPath);
+					String[][] t = null;
 					try {
-						testing.generate();
+						t = testing.generate();
 					} catch (EncryptedDocumentException | InvalidFormatException | IOException e1) {
-						// TODO Auto-generated catch block
+						//TODOAuto-generated catch block
 						e1.printStackTrace();
 					}
+					createTableRandom(t);
+					gotoP2.setEnabled(true);
 				}
 			}
 		});
@@ -319,7 +345,59 @@ public class GUI {
 		
 		JPanel panel2 = new JPanel();
 		frmTer.getContentPane().add(panel2, "PANEL2");
-		panel2.setLayout(new SpringLayout());
+		SpringLayout sl_panel2 = new SpringLayout();
+		panel2.setLayout(sl_panel2);
+		
+		
+		JLabel lblExcelRandomis = new JLabel("Excel randomisé");
+		sl_panel2.putConstraint(SpringLayout.NORTH, lblExcelRandomis, 63, SpringLayout.NORTH, panel2);
+		sl_panel2.putConstraint(SpringLayout.WEST, lblExcelRandomis, 30, SpringLayout.WEST, panel2);
+		sl_panel2.putConstraint(SpringLayout.SOUTH, lblExcelRandomis, 79, SpringLayout.NORTH, panel2);
+		sl_panel2.putConstraint(SpringLayout.EAST, lblExcelRandomis, 145, SpringLayout.WEST, panel2);
+		panel2.add(lblExcelRandomis);
+		
+		
+		JButton btnPrcdent = new JButton("Précédent");
+		btnPrcdent.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				cardLayout.show(frmTer.getContentPane(),"PANEL1");
+			}
+		});
+		sl_panel2.putConstraint(SpringLayout.NORTH, btnPrcdent, -77, SpringLayout.SOUTH, panel2);
+		sl_panel2.putConstraint(SpringLayout.WEST, btnPrcdent, 30, SpringLayout.WEST, panel2);
+		sl_panel2.putConstraint(SpringLayout.SOUTH, btnPrcdent, -37, SpringLayout.SOUTH, panel2);
+		sl_panel2.putConstraint(SpringLayout.EAST, btnPrcdent, 145, SpringLayout.WEST, panel2);
+		panel2.add(btnPrcdent);
+		
+		
+		JButton btnGnrer = new JButton("Générer");
+		btnGnrer.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				//TODO decommenter 
+				System.out.println("Et là les CVs sont créés");
+				//testing.create();
+			
+			}
+		});
+		sl_panel2.putConstraint(SpringLayout.NORTH, btnGnrer, -40, SpringLayout.SOUTH, btnPrcdent);
+		sl_panel2.putConstraint(SpringLayout.WEST, btnGnrer, -147, SpringLayout.EAST, panel2);
+		sl_panel2.putConstraint(SpringLayout.SOUTH, btnGnrer, 0, SpringLayout.SOUTH, btnPrcdent);
+		sl_panel2.putConstraint(SpringLayout.EAST, btnGnrer, -32, SpringLayout.EAST, panel2);
+		panel2.add(btnGnrer);
+		
+		
+		JScrollPane scrollPane = new JScrollPane();
+		sl_panel2.putConstraint(SpringLayout.NORTH, scrollPane, 6, SpringLayout.SOUTH, lblExcelRandomis);
+		sl_panel2.putConstraint(SpringLayout.WEST, scrollPane, 30, SpringLayout.WEST, panel2);
+		sl_panel2.putConstraint(SpringLayout.SOUTH, scrollPane, -119, SpringLayout.NORTH, btnPrcdent);
+		sl_panel2.putConstraint(SpringLayout.EAST, scrollPane, -32, SpringLayout.EAST, panel2);
+		panel2.add(scrollPane);
+		
+		
+		tableRandom = new JTable();
+		scrollPane.setViewportView(tableRandom);
 		
 		
 
@@ -357,4 +435,25 @@ public class GUI {
 		}
 		//System.out.println("");
 	}
+	
+	/**Fonction qui crée le tableau du resultat de la randomisation**/
+	@SuppressWarnings("serial")
+	public void createTableRandom(String [][] t){
+		String tValues[][] = new String[(t.length-1)][t[0].length];
+		String tTitles[] = t[0];
+		
+		for(int i=1; i<t.length; i++){
+			for(int j=0; j<t[0].length; j++){
+				tValues[i-1][j] = t[i][j];
+			}
+		}
+		
+		modelRandom = new DefaultTableModel(tValues,tTitles){
+				public boolean isCellEditable(int row, int column) {
+					return false;
+				}
+			};
+		tableRandom.setModel(modelRandom);
+	}
+	
 }

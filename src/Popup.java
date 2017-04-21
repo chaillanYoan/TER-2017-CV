@@ -32,6 +32,7 @@ public class Popup extends JFrame {
 					Popup frame = new Popup(p,s);
 					
 					frame.setVisible(true);
+					frame.setAlwaysOnTop(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

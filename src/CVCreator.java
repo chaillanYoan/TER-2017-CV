@@ -12,6 +12,8 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 public class CVCreator {
 	private ExcelParser ep;
 	public String tableur[][];
+
+
 	public CVCreator(ExcelParser ep_){
 		this.ep = ep_;
 	}
@@ -90,4 +92,10 @@ public class CVCreator {
 		 doc.write(new File(outputFileName));
 		 doc.close(); 
 	}
+	
+	public String[][] getTableur() {
+		return tableur;
+	}
+	
+	
 }
