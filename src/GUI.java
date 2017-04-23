@@ -310,7 +310,7 @@ public class GUI {
 				}
 				else if(templates.size() == 0){
 					Point p = frmTer.getLocation();
-					Popup.pop(p,"Veuillez selectionner un template de CV (.doc).");
+					Popup.pop(p,"Veuillez selectionner un template de CV (.doc)");
 				}
 				else if(outputFolder == null){
 					Point p = frmTer.getLocation();
@@ -327,6 +327,8 @@ public class GUI {
 						e1.printStackTrace();
 					}
 					createTableRandom(t);
+					Point p = frmTer.getLocation();
+					Popup.pop(p,"TODO : choix nb offres et choix nb CVs/offre");
 					gotoP2.setEnabled(true);
 				}
 			}
@@ -377,7 +379,12 @@ public class GUI {
 			public void mouseClicked(MouseEvent e) {
 				//TODO decommenter 
 				System.out.println("Et là les CVs sont créés");
-				//testing.create();
+				try {
+					testing.create();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			
 			}
 		});

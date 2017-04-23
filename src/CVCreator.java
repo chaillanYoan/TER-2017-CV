@@ -53,7 +53,7 @@ public class CVCreator {
 	 * @throws IOException **/
 	public void createCV(int nb, String templateName, String outputFolder) throws IOException{
 	    
-	   	System.out.println("Creation CV "+(nb+1));
+	   	System.out.println("Creation CV "+(nb));
 	   	
 	   	/*pour faire simple on remplace "telephone" par "telephone : 0632548654" au lieu de rajouter le numéro Ã  la suite*/
 		//String tel = "Téléphone : "+tableur[nb][3]; // création de la ligne telephone

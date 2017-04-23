@@ -55,16 +55,44 @@ public class Test {
 	 * et du coup verifier si assez de données pour le nb de CVs
 	 */
 	public String[][] generate() throws EncryptedDocumentException, InvalidFormatException, IOException{
+		int nbOffres = 2, CVparOffre = 4;
+		
 		ExcelParser ep = new ExcelParser();
 		ep.getSourceExcel(this.excelPath);
 		cvc = new CVCreator(ep);
-		cvc.createCVData(2, 3);//2offres 3CV/offre
+		cvc.createCVData(nbOffres, CVparOffre);
 		
 		this.tempprint(cvc);
-		return cvc.getTableur();
+		return returnOfGenerate(cvc.getTableur(),nbOffres,CVparOffre);
 	}
 	
+	/*crée la colonne du numero d'annonce*/
+	public String[][] returnOfGenerate(String[][] s, int nbOffres, int CVparOffre){
+		String [][] t = new String[s.length][(s[0].length)+1];
+		
+		int num = 1;
+		int cpt = 0;
+		for(int i=1; i<s.length; i++){
+			if(cpt == CVparOffre){
+				cpt = 0;
+				num++;
+			}
+			t[i][0] = ""+num;
+			cpt++;
+			for(int j=0; j<s[0].length; j++){
+				t[i][j+1] = s[i][j];
+			}
+		}
+		
+		for(int j=0; j<s[0].length; j++){
+			t[0][j+1] = s[0][j];
+		}
+		t[0][0] = "annnonce";
+		
+		return t;
+	}
 	
+	/* TODO args avec nb offres et nb CV/offes*/
 	public void create() throws IOException{
 		cvc.createCV(1, this.templates.get(0).filepath, this.outputFolder);
 	}
