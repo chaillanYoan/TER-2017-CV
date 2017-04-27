@@ -9,6 +9,7 @@ import org.apache.poi.hwpf.usermodel.Range;
 import org.apache.poi.hwpf.usermodel.Section;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
+
 public class CVCreator {
 	private ExcelParser ep;
 	public String tableur[][];
@@ -51,6 +52,7 @@ public class CVCreator {
 	
 	/** Fonction pour creer les CVs 
 	 * @throws IOException **/
+	/* TODO args avec nb offres et nb CV/offes*/
 	public void createCV(int nb, String templateName, String outputFolder) throws IOException{
 	    
 	   	System.out.println("Creation CV "+(nb));
@@ -62,9 +64,9 @@ public class CVCreator {
 		FileInputStream fis = new FileInputStream(templateName);
 		POIFSFileSystem fs = new POIFSFileSystem(fis);
 		HWPFDocument doc = new HWPFDocument(fs);
-	
 		
-		Range r1 = doc.getRange(); 
+		
+		Range r1 = doc.getRange();
 	
 		for ( int i = 0; i < r1.numSections(); ++i ) { 
 			 Section s = r1.getSection(i); 
@@ -92,6 +94,7 @@ public class CVCreator {
 		 doc.write(new File(outputFileName));
 		 doc.close(); 
 	}
+	
 	
 	public String[][] getTableur() {
 		return tableur;

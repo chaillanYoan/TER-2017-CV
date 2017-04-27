@@ -11,6 +11,7 @@ import javax.swing.JTextField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.NumberFormatter;
 
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -19,12 +20,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 
 import javax.swing.UIManager;
 import java.awt.CardLayout;
 
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.JFormattedTextField;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class GUI {
 	
@@ -38,8 +45,11 @@ public class GUI {
 	private DefaultTableModel model;
 	private JTable table;
 	
-	private String templateName, templatePath, outputFolder, excelPath;
+	private String outputFolder, excelPath;
+	private String[] templateNames, templatePaths;
 	private ArrayList<Template> templates = new ArrayList<Template>();
+	
+	private int nombreAnnonces = -1, nombreCvParAnnonce = -1;
 	
 	private DefaultTableModel modelRandom;
 	private JTable tableRandom;
@@ -84,7 +94,7 @@ public class GUI {
 		cardLayout = new CardLayout(0, 0);
 		frmTer = new JFrame();
 		frmTer.setTitle("TER 2017");
-		frmTer.setBounds(100, 100, 550, 720);
+		frmTer.setBounds(100, 100, 550, 750);
 		frmTer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmTer.getContentPane().setLayout(cardLayout);
 		
@@ -103,7 +113,7 @@ public class GUI {
 		panel1.setLayout(sl_panel1);
 		
 		
-		JLabel lblFichierExcelxsl = new JLabel("Fichier excel (.xls) :");
+		JLabel lblFichierExcelxsl = new JLabel("Base de donnée (.xls) :");
 		sl_panel1.putConstraint(SpringLayout.NORTH, lblFichierExcelxsl, 35, SpringLayout.NORTH, panel1);
 		sl_panel1.putConstraint(SpringLayout.SOUTH, lblFichierExcelxsl, 51, SpringLayout.NORTH, panel1);
 		panel1.add(lblFichierExcelxsl);
@@ -114,10 +124,10 @@ public class GUI {
 		
 		
 		JLabel lblTemplatesDeCv = new JLabel("Templates de CV (.doc) :");
+		sl_panel1.putConstraint(SpringLayout.EAST, lblDossierDeDestination, 0, SpringLayout.EAST, lblTemplatesDeCv);
 		sl_panel1.putConstraint(SpringLayout.NORTH, lblTemplatesDeCv, 34, SpringLayout.SOUTH, lblFichierExcelxsl);
 		panel1.add(lblTemplatesDeCv);
 		JButton btnRandomisation = new JButton("Randomisation");
-		sl_panel1.putConstraint(SpringLayout.SOUTH, lblDossierDeDestination, -44, SpringLayout.NORTH, btnRandomisation);
 		sl_panel1.putConstraint(SpringLayout.WEST, btnRandomisation, 70, SpringLayout.WEST, panel1);
 		sl_panel1.putConstraint(SpringLayout.SOUTH, btnRandomisation, -33, SpringLayout.SOUTH, panel1);
 		panel1.add(btnRandomisation);
@@ -125,16 +135,15 @@ public class GUI {
 		
 		textFieldOutput = new JTextField();
 		sl_panel1.putConstraint(SpringLayout.WEST, textFieldOutput, 171, SpringLayout.WEST, panel1);
-		sl_panel1.putConstraint(SpringLayout.SOUTH, textFieldOutput, -37, SpringLayout.NORTH, btnRandomisation);
-		sl_panel1.putConstraint(SpringLayout.EAST, lblDossierDeDestination, -12, SpringLayout.WEST, textFieldOutput);
 		panel1.add(textFieldOutput);
 		textFieldOutput.setEditable(false);
 		textFieldOutput.setColumns(10);
 		
 		
 		textFieldTemplate = new JTextField();
-		sl_panel1.putConstraint(SpringLayout.WEST, textFieldTemplate, 170, SpringLayout.WEST, panel1);
+		sl_panel1.putConstraint(SpringLayout.EAST, textFieldOutput, 0, SpringLayout.EAST, textFieldTemplate);
 		sl_panel1.putConstraint(SpringLayout.EAST, lblTemplatesDeCv, -9, SpringLayout.WEST, textFieldTemplate);
+		sl_panel1.putConstraint(SpringLayout.WEST, textFieldTemplate, 170, SpringLayout.WEST, panel1);
 		panel1.add(textFieldTemplate);
 		textFieldTemplate.setEditable(false);
 		textFieldTemplate.setColumns(10);
@@ -143,6 +152,7 @@ public class GUI {
 		textFieldExcel = new JTextField();
 		sl_panel1.putConstraint(SpringLayout.WEST, textFieldExcel, 170, SpringLayout.WEST, panel1);
 		sl_panel1.putConstraint(SpringLayout.NORTH, textFieldTemplate, 22, SpringLayout.SOUTH, textFieldExcel);
+		sl_panel1.putConstraint(SpringLayout.EAST, textFieldTemplate, 0, SpringLayout.EAST, textFieldExcel);
 		sl_panel1.putConstraint(SpringLayout.EAST, lblFichierExcelxsl, -17, SpringLayout.WEST, textFieldExcel);
 		sl_panel1.putConstraint(SpringLayout.NORTH, textFieldExcel, 30, SpringLayout.NORTH, panel1);
 		sl_panel1.putConstraint(SpringLayout.SOUTH, textFieldExcel, 58, SpringLayout.NORTH, panel1);
@@ -152,35 +162,33 @@ public class GUI {
 		
 		
 		JButton btnParcourirTemplate = new JButton("Parcourir");
-		sl_panel1.putConstraint(SpringLayout.EAST, textFieldTemplate, -23, SpringLayout.WEST, btnParcourirTemplate);
+		sl_panel1.putConstraint(SpringLayout.NORTH, btnParcourirTemplate, -6, SpringLayout.NORTH, lblTemplatesDeCv);
+		sl_panel1.putConstraint(SpringLayout.WEST, btnParcourirTemplate, 6, SpringLayout.EAST, textFieldTemplate);
+		sl_panel1.putConstraint(SpringLayout.EAST, btnParcourirTemplate, -69, SpringLayout.EAST, panel1);
 		panel1.add(btnParcourirTemplate);
 		
 		
 		JButton btnParcourirExcel = new JButton("Parcourir");
-		sl_panel1.putConstraint(SpringLayout.NORTH, btnParcourirTemplate, 22, SpringLayout.SOUTH, btnParcourirExcel);
-		sl_panel1.putConstraint(SpringLayout.WEST, btnParcourirTemplate, -95, SpringLayout.EAST, btnParcourirExcel);
-		sl_panel1.putConstraint(SpringLayout.EAST, btnParcourirTemplate, 0, SpringLayout.EAST, btnParcourirExcel);
-		sl_panel1.putConstraint(SpringLayout.EAST, textFieldExcel, -23, SpringLayout.WEST, btnParcourirExcel);
-		sl_panel1.putConstraint(SpringLayout.EAST, btnParcourirExcel, -124, SpringLayout.EAST, panel1);
-		sl_panel1.putConstraint(SpringLayout.NORTH, btnParcourirExcel, 30, SpringLayout.NORTH, panel1);
-		sl_panel1.putConstraint(SpringLayout.SOUTH, btnParcourirExcel, 58, SpringLayout.NORTH, panel1);
-		sl_panel1.putConstraint(SpringLayout.WEST, btnParcourirExcel, -219, SpringLayout.EAST, panel1);
+		sl_panel1.putConstraint(SpringLayout.EAST, textFieldExcel, -6, SpringLayout.WEST, btnParcourirExcel);
+		sl_panel1.putConstraint(SpringLayout.WEST, btnParcourirExcel, -164, SpringLayout.EAST, panel1);
+		sl_panel1.putConstraint(SpringLayout.EAST, btnParcourirExcel, -69, SpringLayout.EAST, panel1);
+		sl_panel1.putConstraint(SpringLayout.NORTH, btnParcourirExcel, -7, SpringLayout.NORTH, lblFichierExcelxsl);
 		panel1.add(btnParcourirExcel);
 		
 		
 		JButton btnParcourirOutput = new JButton("Parcourir");
-		sl_panel1.putConstraint(SpringLayout.EAST, textFieldOutput, -17, SpringLayout.WEST, btnParcourirOutput);
-		sl_panel1.putConstraint(SpringLayout.EAST, btnParcourirOutput, -129, SpringLayout.EAST, panel1);
-		sl_panel1.putConstraint(SpringLayout.NORTH, btnParcourirOutput, -126, SpringLayout.SOUTH, panel1);
-		sl_panel1.putConstraint(SpringLayout.SOUTH, btnParcourirOutput, -98, SpringLayout.SOUTH, panel1);
-		sl_panel1.putConstraint(SpringLayout.WEST, btnParcourirOutput, -224, SpringLayout.EAST, panel1);
+		sl_panel1.putConstraint(SpringLayout.WEST, btnParcourirOutput, 6, SpringLayout.EAST, textFieldOutput);
+		sl_panel1.putConstraint(SpringLayout.EAST, btnParcourirOutput, -69, SpringLayout.EAST, panel1);
 		panel1.add(btnParcourirOutput);
 		
 		
 		JScrollPane scrollPanelListeTemplate = new JScrollPane();
-		sl_panel1.putConstraint(SpringLayout.WEST, scrollPanelListeTemplate, 45, SpringLayout.WEST, panel1);
-		sl_panel1.putConstraint(SpringLayout.SOUTH, scrollPanelListeTemplate, -39, SpringLayout.NORTH, textFieldOutput);
-		sl_panel1.putConstraint(SpringLayout.EAST, scrollPanelListeTemplate, -39, SpringLayout.EAST, panel1);
+		sl_panel1.putConstraint(SpringLayout.NORTH, textFieldOutput, 21, SpringLayout.SOUTH, scrollPanelListeTemplate);
+		sl_panel1.putConstraint(SpringLayout.NORTH, lblDossierDeDestination, 27, SpringLayout.SOUTH, scrollPanelListeTemplate);
+		sl_panel1.putConstraint(SpringLayout.SOUTH, scrollPanelListeTemplate, -248, SpringLayout.SOUTH, panel1);
+		sl_panel1.putConstraint(SpringLayout.NORTH, scrollPanelListeTemplate, 148, SpringLayout.NORTH, panel1);
+		sl_panel1.putConstraint(SpringLayout.WEST, scrollPanelListeTemplate, 46, SpringLayout.WEST, panel1);
+		sl_panel1.putConstraint(SpringLayout.EAST, scrollPanelListeTemplate, -38, SpringLayout.EAST, panel1);
 		panel1.add(scrollPanelListeTemplate);
 		
 		/*Tableau des templates*/
@@ -201,6 +209,8 @@ public class GUI {
 		table = new JTable();
 		table.setModel(model);
 		table.setBounds(377, 118, 480, 300);
+		table.getColumnModel().getColumn(2).setMaxWidth(150);
+		table.getColumnModel().getColumn(2).setMinWidth(100);
 		table.setRowHeight(30);
 		/*Action de bouton supprimer du tableau*/
 		Action delete = new AbstractAction()
@@ -218,26 +228,21 @@ public class GUI {
 		scrollPanelListeTemplate.setViewportView(table);
 		
 		
-		JLabel lblListeDesTemplates = new JLabel("Liste des templates");
-		sl_panel1.putConstraint(SpringLayout.NORTH, scrollPanelListeTemplate, 4, SpringLayout.SOUTH, lblListeDesTemplates);
-		sl_panel1.putConstraint(SpringLayout.NORTH, lblListeDesTemplates, 45, SpringLayout.SOUTH, lblTemplatesDeCv);
-		sl_panel1.putConstraint(SpringLayout.SOUTH, lblListeDesTemplates, 61, SpringLayout.SOUTH, lblTemplatesDeCv);
-		sl_panel1.putConstraint(SpringLayout.WEST, lblListeDesTemplates, 49, SpringLayout.WEST, panel1);
+		JLabel lblListeDesTemplates = new JLabel("Liste des templates :");
+		sl_panel1.putConstraint(SpringLayout.NORTH, lblListeDesTemplates, 25, SpringLayout.SOUTH, lblTemplatesDeCv);
+		sl_panel1.putConstraint(SpringLayout.WEST, lblListeDesTemplates, 6, SpringLayout.WEST, scrollPanelListeTemplate);
+		sl_panel1.putConstraint(SpringLayout.SOUTH, lblListeDesTemplates, -6, SpringLayout.NORTH, scrollPanelListeTemplate);
+		sl_panel1.putConstraint(SpringLayout.EAST, lblListeDesTemplates, 0, SpringLayout.EAST, btnRandomisation);
 		panel1.add(lblListeDesTemplates);
 		
 		
-		JButton btnAjouter = new JButton("Ajouter");
-		sl_panel1.putConstraint(SpringLayout.NORTH, btnAjouter, 0, SpringLayout.NORTH, textFieldTemplate);
-		sl_panel1.putConstraint(SpringLayout.WEST, btnAjouter, 6, SpringLayout.EAST, btnParcourirTemplate);
-		sl_panel1.putConstraint(SpringLayout.EAST, btnAjouter, -23, SpringLayout.EAST, panel1);
-		panel1.add(btnAjouter);
-		
-		
-		gotoP2 = new JButton("Afficher random");
+		gotoP2 = new JButton("Afficher le résultat");
+		sl_panel1.putConstraint(SpringLayout.NORTH, btnParcourirOutput, -166, SpringLayout.NORTH, gotoP2);
+		sl_panel1.putConstraint(SpringLayout.SOUTH, btnParcourirOutput, -138, SpringLayout.NORTH, gotoP2);
+		sl_panel1.putConstraint(SpringLayout.WEST, gotoP2, -219, SpringLayout.EAST, panel1);
+		sl_panel1.putConstraint(SpringLayout.EAST, gotoP2, -69, SpringLayout.EAST, panel1);
 		gotoP2.setEnabled(false);
 		sl_panel1.putConstraint(SpringLayout.NORTH, gotoP2, 0, SpringLayout.NORTH, btnRandomisation);
-		sl_panel1.putConstraint(SpringLayout.WEST, gotoP2, 0, SpringLayout.WEST, btnParcourirTemplate);
-		sl_panel1.putConstraint(SpringLayout.EAST, gotoP2, -69, SpringLayout.EAST, panel1);
 		gotoP2.setName("btnNext");
 		gotoP2.addMouseListener(new MouseAdapter() {
 			@Override
@@ -249,13 +254,119 @@ public class GUI {
 		panel1.add(gotoP2);
 		
 		
-		btnAjouter.addMouseListener(new MouseAdapter() {
+		JLabel lblNombreDannonces = new JLabel("Nombre d'annonces :");
+		sl_panel1.putConstraint(SpringLayout.SOUTH, lblDossierDeDestination, -34, SpringLayout.NORTH, lblNombreDannonces);
+		sl_panel1.putConstraint(SpringLayout.WEST, lblNombreDannonces, 156, SpringLayout.WEST, panel1);
+		sl_panel1.putConstraint(SpringLayout.EAST, lblNombreDannonces, 274, SpringLayout.WEST, panel1);
+		panel1.add(lblNombreDannonces);
+		
+		
+		JLabel lblNombreDeCv = new JLabel("Nombre de CV par annonce :");
+		sl_panel1.putConstraint(SpringLayout.NORTH, lblNombreDannonces, -40, SpringLayout.NORTH, lblNombreDeCv);
+		sl_panel1.putConstraint(SpringLayout.SOUTH, lblNombreDannonces, -24, SpringLayout.NORTH, lblNombreDeCv);
+		sl_panel1.putConstraint(SpringLayout.WEST, lblNombreDeCv, 115, SpringLayout.WEST, panel1);
+		sl_panel1.putConstraint(SpringLayout.EAST, lblNombreDeCv, 274, SpringLayout.WEST, panel1);
+		sl_panel1.putConstraint(SpringLayout.NORTH, lblNombreDeCv, -70, SpringLayout.NORTH, btnRandomisation);
+		sl_panel1.putConstraint(SpringLayout.SOUTH, lblNombreDeCv, -54, SpringLayout.NORTH, btnRandomisation);
+		panel1.add(lblNombreDeCv);
+		
+		
+		
+		NumberFormat format = NumberFormat.getInstance();
+		NumberFormatter formatter = new NumberFormatter(format){
+			/*
+			 * text.compareTo("") return null : permet d'autoriser la valeur "" ce qui permet de vider completement le champ
+			 * sinon lorsqu'on rentre "1234" mais que l'on veut le supprimer par la suite il restera "1" qui sera impossible 
+			 * a supprimer car "" n'est pas une valeur valide de base.
+			 */
+			@Override
+			public Object stringToValue(String text) throws ParseException{
+				if(text.compareTo("") == 0)
+					return null;
+				else
+					return super.stringToValue(text);
+			}
+		};
+		formatter.setValueClass(Integer.class);
+	    formatter.setMinimum(0);
+	    formatter.setMaximum(Integer.MAX_VALUE);
+	    formatter.setAllowsInvalid(false);
+	    // If you want the value to be committed on each keystroke instead of focus lost
+	    formatter.setCommitsOnValidEdit(true);
+	    
+		JFormattedTextField formattedTextFieldNbAnnonces = new JFormattedTextField(formatter);
+		sl_panel1.putConstraint(SpringLayout.SOUTH, textFieldOutput, -22, SpringLayout.NORTH, formattedTextFieldNbAnnonces);
+		sl_panel1.putConstraint(SpringLayout.WEST, formattedTextFieldNbAnnonces, 6, SpringLayout.EAST, lblNombreDannonces);
+		sl_panel1.putConstraint(SpringLayout.EAST, formattedTextFieldNbAnnonces, -184, SpringLayout.EAST, panel1);
+		panel1.add(formattedTextFieldNbAnnonces);
+		
+		JFormattedTextField formattedTextFieldNbCvAnnonce = new JFormattedTextField(formatter);
+		sl_panel1.putConstraint(SpringLayout.WEST, formattedTextFieldNbCvAnnonce, 6, SpringLayout.EAST, lblNombreDeCv);
+		sl_panel1.putConstraint(SpringLayout.EAST, formattedTextFieldNbCvAnnonce, -184, SpringLayout.EAST, panel1);
+		sl_panel1.putConstraint(SpringLayout.NORTH, formattedTextFieldNbAnnonces, -40, SpringLayout.NORTH, formattedTextFieldNbCvAnnonce);
+		sl_panel1.putConstraint(SpringLayout.SOUTH, formattedTextFieldNbAnnonces, -12, SpringLayout.NORTH, formattedTextFieldNbCvAnnonce);
+		sl_panel1.putConstraint(SpringLayout.SOUTH, formattedTextFieldNbCvAnnonce, -48, SpringLayout.NORTH, gotoP2);
+		panel1.add(formattedTextFieldNbCvAnnonce);
+		
+		
+		JButton btnValiderNbAnnonces = new JButton("Valider");
+		btnValiderNbAnnonces.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				addListeCV(templateName,templatePath);
+				if(formattedTextFieldNbAnnonces.getValue() != null){
+					nombreAnnonces = (int)formattedTextFieldNbAnnonces.getValue();
+					formattedTextFieldNbAnnonces.setEnabled(false);
+				}
 			}
 		});
+		sl_panel1.putConstraint(SpringLayout.NORTH, btnValiderNbAnnonces, -6, SpringLayout.NORTH, lblNombreDannonces);
+		sl_panel1.putConstraint(SpringLayout.WEST, btnValiderNbAnnonces, 6, SpringLayout.EAST, formattedTextFieldNbAnnonces);
+		panel1.add(btnValiderNbAnnonces);
 		
+		
+		JButton btnValiderNbCvAnnonce = new JButton("Valider");
+		btnValiderNbCvAnnonce.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(formattedTextFieldNbCvAnnonce.getValue() != null){
+					nombreCvParAnnonce = (int)formattedTextFieldNbCvAnnonce.getValue();
+					formattedTextFieldNbCvAnnonce.setEnabled(false);
+				}
+			}
+		});
+		sl_panel1.putConstraint(SpringLayout.NORTH, btnValiderNbCvAnnonce, -6, SpringLayout.NORTH, lblNombreDeCv);
+		sl_panel1.putConstraint(SpringLayout.WEST, btnValiderNbCvAnnonce, 6, SpringLayout.EAST, formattedTextFieldNbCvAnnonce);
+		panel1.add(btnValiderNbCvAnnonce);
+		
+		
+		JButton btnResetNbAnnonces = new JButton("Reset");
+		btnResetNbAnnonces.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				formattedTextFieldNbAnnonces.setText("");
+				formattedTextFieldNbAnnonces.setEnabled(true);
+				nombreAnnonces = -1;
+			}
+		});
+		sl_panel1.putConstraint(SpringLayout.NORTH, btnResetNbAnnonces, -6, SpringLayout.NORTH, lblNombreDannonces);
+		sl_panel1.putConstraint(SpringLayout.WEST, btnResetNbAnnonces, 6, SpringLayout.EAST, btnValiderNbAnnonces);
+		panel1.add(btnResetNbAnnonces);
+		
+		
+		JButton btnResetNbCvAnnonce = new JButton("Reset");
+		btnResetNbCvAnnonce.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				formattedTextFieldNbCvAnnonce.setText("");
+				formattedTextFieldNbCvAnnonce.setEnabled(true);
+				nombreCvParAnnonce = -1;
+			}
+		});
+		sl_panel1.putConstraint(SpringLayout.NORTH, btnResetNbCvAnnonce, -6, SpringLayout.NORTH, lblNombreDeCv);
+		sl_panel1.putConstraint(SpringLayout.WEST, btnResetNbCvAnnonce, 6, SpringLayout.EAST, btnValiderNbCvAnnonce);
+		panel1.add(btnResetNbCvAnnonce);
+		
+
 		
 		btnParcourirOutput.addMouseListener(new MouseAdapter() {
 			@Override
@@ -274,7 +385,7 @@ public class GUI {
 		btnParcourirExcel.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				Explorer explorer = new Explorer();
+				Explorer explorer = new Explorer("UNIQUE_FILE");
 				excelPath = explorer.getFilepath();
 				
 				textFieldExcel.setText(excelPath);
@@ -286,15 +397,17 @@ public class GUI {
 		btnParcourirTemplate.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				Explorer explorer = new Explorer();
-				templateName = explorer.getFilename();
-				templatePath = explorer.getFilepath();
+				Explorer explorer = new Explorer("MULTIPLE_FILES");
 				
+				templateNames = explorer.getFilenames();
+				templatePaths = explorer.getFilepaths();
 				
-				textFieldTemplate.setText(templatePath);
+				if(templateNames != null){
+					textFieldTemplate.setText(templatePaths[templateNames.length-1]);
 				
-				//System.out.println("nom fichier récupéré = "+templateName);
-				//System.out.println("chemin fichier récupéré = "+templatePath);
+					for(int i=0; i<templateNames.length; i++)
+						addListeCV(templateNames[i],templatePaths[i]);
+				}
 			}
 		});
 		
@@ -306,7 +419,7 @@ public class GUI {
 				/*TODO mettre les verif dans une fonction a part qui renvoie un boolean*/
 				if(excelPath == null){
 					Point p = frmTer.getLocation();
-					Popup.pop(p,"Veuillez selectionner un fichier excel (.xls)");
+					Popup.pop(p,"Veuillez selectionner une base de donnée (.xls)");
 				}
 				else if(templates.size() == 0){
 					Point p = frmTer.getLocation();
@@ -316,6 +429,14 @@ public class GUI {
 					Point p = frmTer.getLocation();
 					Popup.pop(p,"Veuillez selectionner un dossier de sortie.");
 				}
+				else if(nombreAnnonces < 0){
+					Point p = frmTer.getLocation();
+					Popup.pop(p,"Veuillez choisir un nombre d'annonces.");
+				}
+				else if(nombreCvParAnnonce < 0){
+					Point p = frmTer.getLocation();
+					Popup.pop(p,"Veuillez le nombre de CV par annonce.");
+				}
 				else{
 					testing = new Test();
 					testing.init(templates, outputFolder, excelPath);
@@ -323,12 +444,10 @@ public class GUI {
 					try {
 						t = testing.generate();
 					} catch (EncryptedDocumentException | InvalidFormatException | IOException e1) {
-						//TODOAuto-generated catch block
+						//Auto-generated catch block
 						e1.printStackTrace();
 					}
 					createTableRandom(t);
-					Point p = frmTer.getLocation();
-					Popup.pop(p,"TODO : choix nb offres et choix nb CVs/offre");
 					gotoP2.setEnabled(true);
 				}
 			}
@@ -351,11 +470,11 @@ public class GUI {
 		panel2.setLayout(sl_panel2);
 		
 		
-		JLabel lblExcelRandomis = new JLabel("Excel randomisé");
+		JLabel lblExcelRandomis = new JLabel("Résultat du mélange :");
 		sl_panel2.putConstraint(SpringLayout.NORTH, lblExcelRandomis, 63, SpringLayout.NORTH, panel2);
 		sl_panel2.putConstraint(SpringLayout.WEST, lblExcelRandomis, 30, SpringLayout.WEST, panel2);
 		sl_panel2.putConstraint(SpringLayout.SOUTH, lblExcelRandomis, 79, SpringLayout.NORTH, panel2);
-		sl_panel2.putConstraint(SpringLayout.EAST, lblExcelRandomis, 145, SpringLayout.WEST, panel2);
+		sl_panel2.putConstraint(SpringLayout.EAST, lblExcelRandomis, 160, SpringLayout.WEST, panel2);
 		panel2.add(lblExcelRandomis);
 		
 		
@@ -373,16 +492,16 @@ public class GUI {
 		panel2.add(btnPrcdent);
 		
 		
-		JButton btnGnrer = new JButton("Générer");
+		JButton btnGnrer = new JButton("Générer les CV");
 		btnGnrer.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				//TODO decommenter 
+				//TODO gestion création des CV
 				System.out.println("Et là les CVs sont créés");
 				try {
 					testing.create();
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e1.printStackTrace();
 				}
 			
@@ -462,5 +581,4 @@ public class GUI {
 			};
 		tableRandom.setModel(modelRandom);
 	}
-	
 }
