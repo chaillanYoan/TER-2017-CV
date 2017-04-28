@@ -36,7 +36,9 @@ public class Test {
 	
 	
 	public void init(ArrayList<Template> t, String output, String excel){
-		/*le caractere "\" est special et il faut le signaler avec un \ avant donc ça donne : "\\"*/
+		/*le caractere "\" est special et il faut le signaler avec un \ avant donc ça donne : "\\" pour les chemins windows
+		 * 
+		 */
 		for(int i=0; i<t.size(); i++)
 			t.set(i, new Template(t.get(i).filename.replace("\\","\\\\"),t.get(i).filepath.replace("\\","\\\\")));
 		
@@ -93,8 +95,9 @@ public class Test {
 	}
 	
 	/* TODO args avec nb offres et nb CV/offes*/
-	public void create() throws IOException{
-		cvc.createCV(1, this.templates.get(0).filepath, this.outputFolder);
+	public void create(int nbOffres, int nbCvParOffre) throws IOException{
+		cvc.createCV(1,1, this.templates.get(0).filepath, this.outputFolder);
+		cvc.createCV(1,2, this.templates.get(1).filepath, this.outputFolder);
 	}
 	
 	

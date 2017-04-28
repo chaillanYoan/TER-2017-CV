@@ -52,8 +52,7 @@ public class CVCreator {
 	
 	/** Fonction pour creer les CVs 
 	 * @throws IOException **/
-	/* TODO args avec nb offres et nb CV/offes*/
-	public void createCV(int nb, String templateName, String outputFolder) throws IOException{
+	public void createCV(int numeroAnnonce, int nb, String templatePath, String outputFolder) throws IOException{
 	    
 	   	System.out.println("Creation CV "+(nb));
 	   	
@@ -61,7 +60,7 @@ public class CVCreator {
 		//String tel = "Téléphone : "+tableur[nb][3]; // création de la ligne telephone
 		//String mail = "Mail : "+tableur[nb][4]; //creation de la lignee mail
 		
-		FileInputStream fis = new FileInputStream(templateName);
+		FileInputStream fis = new FileInputStream(templatePath);
 		POIFSFileSystem fs = new POIFSFileSystem(fis);
 		HWPFDocument doc = new HWPFDocument(fs);
 		
@@ -89,10 +88,73 @@ public class CVCreator {
 				 }
 			 } 
 		 } 
-		 String outputFileName = outputFolder+"\\"+"TEST CV - "+tableur[nb][1].toUpperCase()+".doc";
-		 //System.out.println(doc.getDocumentText());
-		 doc.write(new File(outputFileName));
-		 doc.close(); 
+		
+		//outputFileName = path/name.doc
+		String outputFileName = createOutputPath(1,outputFolder,templatePath,tableur[nb][1],tableur[nb][0]);
+		
+		//creation des sous dossiers output
+		if(outputFileName.contains("\\"))
+			new File(outputFileName.substring(0, outputFileName.lastIndexOf('\\'))).mkdirs();
+		if(outputFileName.contains("/"))
+			new File(outputFileName.substring(0, outputFileName.lastIndexOf('/'))).mkdirs();
+		
+		//System.out.println(doc.getDocumentText());
+		doc.write(new File(outputFileName));
+		doc.close(); 
+	}
+
+	
+	public static String createOutputPath(int numeroAnnonce, String outputFolder, String templatePath, String nom, String prenom){
+		String outputPath = outputFolder;
+		String templateName;
+		
+		//chemin sous windows
+		if(templatePath.contains("\\")){
+			templateName= templatePath.substring(templatePath.lastIndexOf("\\")+1,templatePath.length());
+			outputPath += "\\annonce "+numeroAnnonce+"\\";
+			
+			//si le nom du template commence par un nombre, on le met dans le dossier de son type de template
+			if(Character.isDigit(templateName.charAt(0))){
+				outputPath += "type "+templateName.charAt(0)+"\\";
+				outputPath += creatOutputName(templateName.substring(1, templateName.length()),nom,prenom);
+			}
+			else
+				outputPath += creatOutputName(templateName,nom,prenom);
+		}
+		else{
+		//chemin linux
+			templateName= templatePath.substring(templatePath.lastIndexOf("/")+1,templatePath.length());
+			outputPath += "/annonce "+numeroAnnonce+"/";
+			
+			//si le nom du template commence par un nombre, on le met dans le dossier de son type de template
+			if(Character.isDigit(templateName.charAt(0))){
+				outputPath += "type "+templateName.charAt(0)+"/";
+				outputPath += creatOutputName(templateName.substring(1, templateName.length()),nom,prenom);
+			}
+			else
+				outputPath += creatOutputName(templateName,nom,prenom);
+		}
+
+		return outputPath;
+	}
+	
+	
+	public static String creatOutputName(String templateName, String nom, String prenom){
+		String outputName;
+		
+		if(templateName.compareTo("P_NOM.doc") == 0){
+			outputName = prenom.substring(0, 1).toUpperCase()+"_"+nom.toUpperCase();
+		}
+		else if(templateName.compareTo("NOM.doc") == 0){
+			outputName = nom.toUpperCase();
+		}
+		else if(templateName.compareTo("Prénom Nom.doc") == 0){
+			outputName = prenom.substring(0, 1).toUpperCase()+prenom.substring(1, prenom.length()).toLowerCase()+" "+nom.substring(0, 1).toUpperCase()+nom.substring(1, nom.length()).toLowerCase();
+		}
+		else
+			outputName = prenom+" "+nom;
+		
+		return outputName+".doc";
 	}
 	
 	

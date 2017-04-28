@@ -28,10 +28,7 @@ import javax.swing.UIManager;
 import java.awt.CardLayout;
 
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import javax.swing.JFormattedTextField;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 public class GUI {
 	
@@ -93,7 +90,7 @@ public class GUI {
 	private void initialize() {
 		cardLayout = new CardLayout(0, 0);
 		frmTer = new JFrame();
-		frmTer.setTitle("TER 2017");
+		frmTer.setTitle("Ultra CV-tron 2000");
 		frmTer.setBounds(100, 100, 550, 750);
 		frmTer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmTer.getContentPane().setLayout(cardLayout);
@@ -416,6 +413,7 @@ public class GUI {
 		btnRandomisation.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				System.out.println("CVCreator.outputapth : "+CVCreator.createOutputPath(1, "C:\\AYOYO\\TER\\GIT\\TER-2017-CV\\zoutput", "C:\\AYOYO\\TER\\GIT\\TER-2017-CV\\zinput\\1Prénom Nom.doc","chaillan","YOAN"));
 				/*TODO mettre les verif dans une fonction a part qui renvoie un boolean*/
 				if(excelPath == null){
 					Point p = frmTer.getLocation();
@@ -499,7 +497,7 @@ public class GUI {
 				//TODO gestion création des CV
 				System.out.println("Et là les CVs sont créés");
 				try {
-					testing.create();
+					testing.create(nombreAnnonces, nombreCvParAnnonce);
 				} catch (IOException e1) {
 					// Auto-generated catch block
 					e1.printStackTrace();
