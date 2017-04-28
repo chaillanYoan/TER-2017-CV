@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -51,20 +52,16 @@ public class Test {
 	}
 	
 	
-	/*ancienne fonction main() ( avec create() )
-	 *
-	 * TODO mettre des argument pour choisir le nb d'offre et CV/offres
-	 * et du coup verifier si assez de données pour le nb de CVs
-	 */
-	public String[][] generate() throws EncryptedDocumentException, InvalidFormatException, IOException{
-		int nbOffres = 2, CVparOffre = 4;
+	//ancienne fonction main() ( avec create() )
+	public String[][] generate(int nbOffres, int CVparOffre) throws EncryptedDocumentException, InvalidFormatException, IOException{
+		//int nbOffres = 2, CVparOffre = 4;
 		
 		ExcelParser ep = new ExcelParser();
 		ep.getSourceExcel(this.excelPath);
 		cvc = new CVCreator(ep);
 		cvc.createCVData(nbOffres, CVparOffre);
 		
-		this.tempprint(cvc);
+		//this.tempprint(cvc);
 		return returnOfGenerate(cvc.getTableur(),nbOffres,CVparOffre);
 	}
 	
@@ -94,10 +91,13 @@ public class Test {
 		return t;
 	}
 	
-	/* TODO args avec nb offres et nb CV/offes*/
+	/* TODO generation de toute les offres*/
 	public void create(int nbOffres, int nbCvParOffre) throws IOException{
+		//on melange l'ordre des templates dans l'arraylist
+		Collections.shuffle(templates);
+		System.out.println("liste templates shuffled : "+templates);
+		
 		cvc.createCV(1,1, this.templates.get(0).filepath, this.outputFolder);
-		cvc.createCV(1,2, this.templates.get(1).filepath, this.outputFolder);
 	}
 	
 	

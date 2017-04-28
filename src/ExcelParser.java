@@ -90,4 +90,28 @@ public class ExcelParser {
 	    System.out.println();
 	    this.ligneLongue = longueurLigne;
 	}
+	
+	
+	
+	public static int nombrePersonnes(String filename) throws EncryptedDocumentException, InvalidFormatException, IOException{
+		final File file = new File(filename);
+		final Workbook workbook = WorkbookFactory.create(file);
+		final Sheet sheet = workbook.getSheet("Feuille1");
+		int nbLignes = 0; //nb ligne dans le tableau excel
+		
+		int index = 0;//1 car 1ere ligne = definition colonnes
+	    Row row = sheet.getRow(index++);
+	    while (row != null) {
+	    	nbLignes++;
+	    	row = sheet.getRow(index++);
+	    }
+	    
+	    //-2 car premiere ligne = definition des colonnes
+	    //	   	  et 2ème ligne = liaison nom-prenom-mail
+	    return nbLignes-2;
+	}
+	
+	
+	
+	
 }

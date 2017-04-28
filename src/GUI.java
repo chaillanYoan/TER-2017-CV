@@ -326,8 +326,28 @@ public class GUI {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if(formattedTextFieldNbCvAnnonce.getValue() != null){
-					nombreCvParAnnonce = (int)formattedTextFieldNbCvAnnonce.getValue();
-					formattedTextFieldNbCvAnnonce.setEnabled(false);
+					if(excelPath == null){
+						Point p = frmTer.getLocation();
+						Popup.pop(p,"Veuillez selectionner une base de donnée (.xls) avant de remplir ce champ.");
+						formattedTextFieldNbCvAnnonce.setText("");
+					}
+					else if((int)formattedTextFieldNbCvAnnonce.getValue() > templates.size()){
+						Point p = frmTer.getLocation();
+						Popup.pop(p,"Vous n'avez pas ajouter assez de templates pour générer autant de CV.");
+					} else
+						try {
+							if((int)formattedTextFieldNbCvAnnonce.getValue() > ExcelParser.nombrePersonnes(excelPath) ){
+								Point p = frmTer.getLocation();
+								Popup.pop(p,"Pas assez de personnes dans la base de donnée.");
+							}
+							else{
+								nombreCvParAnnonce = (int)formattedTextFieldNbCvAnnonce.getValue();
+								formattedTextFieldNbCvAnnonce.setEnabled(false);
+							}
+						} catch (EncryptedDocumentException | InvalidFormatException | IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 				}
 			}
 		});
@@ -413,8 +433,6 @@ public class GUI {
 		btnRandomisation.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				System.out.println("CVCreator.outputapth : "+CVCreator.createOutputPath(1, "C:\\AYOYO\\TER\\GIT\\TER-2017-CV\\zoutput", "C:\\AYOYO\\TER\\GIT\\TER-2017-CV\\zinput\\1Prénom Nom.doc","chaillan","YOAN"));
-				/*TODO mettre les verif dans une fonction a part qui renvoie un boolean*/
 				if(excelPath == null){
 					Point p = frmTer.getLocation();
 					Popup.pop(p,"Veuillez selectionner une base de donnée (.xls)");
@@ -433,14 +451,14 @@ public class GUI {
 				}
 				else if(nombreCvParAnnonce < 0){
 					Point p = frmTer.getLocation();
-					Popup.pop(p,"Veuillez le nombre de CV par annonce.");
-				}
-				else{
+					Popup.pop(p,"Veuillez choisir le nombre de CV par annonce.");
+				} else{
+					System.out.println("pre test");
 					testing = new Test();
 					testing.init(templates, outputFolder, excelPath);
 					String[][] t = null;
 					try {
-						t = testing.generate();
+						t = testing.generate(nombreAnnonces,nombreCvParAnnonce);
 					} catch (EncryptedDocumentException | InvalidFormatException | IOException e1) {
 						//Auto-generated catch block
 						e1.printStackTrace();
