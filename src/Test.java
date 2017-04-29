@@ -91,13 +91,32 @@ public class Test {
 		return t;
 	}
 	
-	/* TODO generation de toute les offres*/
+	/**
+	 * Fonction créant 'nbCvParOffre' pour chaque offre (définit par 'nbOffres')
+	 * 
+	 * @param nbOffres nombre d'annonces d'offres
+	 * @param nbCvParOffre nombre de CV pour chaque offre
+	 * @throws IOException
+	 */
 	public void create(int nbOffres, int nbCvParOffre) throws IOException{
+		System.out.println("liste templates : "+templates);
 		//on melange l'ordre des templates dans l'arraylist
 		Collections.shuffle(templates);
 		System.out.println("liste templates shuffled : "+templates);
 		
-		cvc.createCV(1,1, this.templates.get(0).filepath, this.outputFolder);
+		
+		int cpt = 0, numAnnonce =  1;
+		
+		for(int i = 0; i<nbOffres*nbCvParOffre; i++){
+			if(cpt == nbCvParOffre){
+				cpt = 0;
+				numAnnonce++;
+			}
+			System.out.println("cv/offres:"+nbCvParOffre+"cpt="+cpt+" annonce="+numAnnonce);
+			
+			cvc.createCV(numAnnonce,i+1, this.templates.get(i%templates.size()).filepath, this.outputFolder);
+			cpt++;
+		}
 	}
 	
 	

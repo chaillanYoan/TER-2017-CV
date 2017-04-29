@@ -90,7 +90,7 @@ public class CVCreator {
 		 } 
 		
 		//outputFileName = path/name.doc
-		String outputFileName = createOutputPath(1,outputFolder,templatePath,tableur[nb][1],tableur[nb][0]);
+		String outputFileName = createOutputPath(numeroAnnonce,outputFolder,templatePath,tableur[nb][1],tableur[nb][0]);
 		
 		//creation des sous dossiers output
 		if(outputFileName.contains("\\"))
