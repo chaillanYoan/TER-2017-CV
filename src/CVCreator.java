@@ -56,7 +56,7 @@ public class CVCreator {
 	    
 	   	System.out.println("Creation CV "+(nb));
 	   	
-	   	/*pour faire simple on remplace "telephone" par "telephone : 0632548654" au lieu de rajouter le numéro Ã  la suite*/
+	   	/*pour faire simple on remplace "telephone" par "telephone : 0632548654" au lieu de rajouter le numéro ÃƒÂ  la suite*/
 		//String tel = "Téléphone : "+tableur[nb][3]; // création de la ligne telephone
 		//String mail = "Mail : "+tableur[nb][4]; //creation de la lignee mail
 		
@@ -89,6 +89,8 @@ public class CVCreator {
 			 } 
 		 } 
 		
+		
+		
 		//outputFileName = path/name.doc
 		String outputFileName = createOutputPath(numeroAnnonce,outputFolder,templatePath,tableur[nb][1],tableur[nb][0]);
 		
@@ -100,6 +102,66 @@ public class CVCreator {
 		
 		//System.out.println(doc.getDocumentText());
 		doc.write(new File(outputFileName));
+		 
+		doc.close(); 
+		createLM(numeroAnnonce,nb,templatePath,outputFolder);
+		
+	}
+	
+	/** Fonction pour creer les LMs 
+	 * TODO changer chemin des LM
+	 * 
+	 * @throws IOException **/
+	public void createLM(int numeroAnnonce, int nb, String templatePath, String outputFolder) throws IOException{
+	    
+	   	System.out.println("Creation CV "+(nb));
+	   	
+	   	/*pour faire simple on remplace "telephone" par "telephone : 0632548654" au lieu de rajouter le numéro ÃƒÂ  la suite*/
+		//String tel = "Téléphone : "+tableur[nb][3]; // création de la ligne telephone
+		//String mail = "Mail : "+tableur[nb][4]; //creation de la lignee mail
+		
+		FileInputStream fis = new FileInputStream("zinput\\LM\\LM"+(nb%2+1)+".doc");
+		POIFSFileSystem fs = new POIFSFileSystem(fis);
+		HWPFDocument doc = new HWPFDocument(fs);
+		
+		
+		Range r1 = doc.getRange();
+	
+		for ( int i = 0; i < r1.numSections(); ++i ) { 
+			 Section s = r1.getSection(i); 
+			 for (int x = 0; x < s.numParagraphs(); x++) { 
+				 Paragraph p = s.getParagraph(x); 
+				 for (int z = 0; z < p.numCharacterRuns(); z++){ 
+					 //character run 
+					 CharacterRun run = p.getCharacterRun(z); 
+					 //character run text 
+					 //String text = run.text(); 
+					 //System.out.println(text.toString());
+					 for(i=0;i < ep.getMaxLineLength(); i++){
+						 String txt = tableur[0][i];
+						 txt = "{{"+txt+"}}";
+						 String newtxt = tableur[nb][i];
+						 
+						 run.replaceText(txt, newtxt);
+						 
+					 }
+				 }
+			 } 
+		 } 
+		
+		
+		
+		//outputFileName = path/name.doc
+		String outputFileName = createOutputPath(numeroAnnonce,outputFolder,templatePath,tableur[nb][1],tableur[nb][0]);
+		
+		//creation des sous dossiers output
+		if(outputFileName.contains("\\"))
+			new File(outputFileName.substring(0, outputFileName.lastIndexOf('\\'))).mkdirs();
+		if(outputFileName.contains("/"))
+			new File(outputFileName.substring(0, outputFileName.lastIndexOf('/'))).mkdirs();
+		
+		//System.out.println(doc.getDocumentText());
+		doc.write(new File(outputFileName.replaceAll(".doc", " LM.doc")));
 		doc.close(); 
 	}
 

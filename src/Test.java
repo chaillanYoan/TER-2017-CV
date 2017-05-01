@@ -37,7 +37,7 @@ public class Test {
 	
 	
 	public void init(ArrayList<Template> t, String output, String excel){
-		/*le caractere "\" est special et il faut le signaler avec un \ avant donc ça donne : "\\" pour les chemins windows
+		/*le caractere "\" est special et il faut le signaler avec un \ avant donc Ã§a donne : "\\" pour les chemins windows
 		 * 
 		 */
 		for(int i=0; i<t.size(); i++)
@@ -92,7 +92,8 @@ public class Test {
 	}
 	
 	/**
-	 * Fonction créant 'nbCvParOffre' pour chaque offre (définit par 'nbOffres')
+	 * Fonction créant 'nbCvParOffre' pour chaque offre (définit par 'nbOffres') 
+	 * TODO Collections.shuffle(templates) a chaque nouvelle annonce ?
 	 * 
 	 * @param nbOffres nombre d'annonces d'offres
 	 * @param nbCvParOffre nombre de CV pour chaque offre
@@ -256,7 +257,7 @@ public class Test {
 	    
 	   	System.out.println("Creation CV "+(nb+1));
 	   	
-	   	//pour faire simple on remplace "telephone" par "telephone : 0632548654" au lieu de rajouter le numéro Ã  la suite
+	   	//pour faire simple on remplace "telephone" par "telephone : 0632548654" au lieu de rajouter le numéro ÃƒÂ  la suite
 		String tel = "Téléphone : "+tableur[nb][3]; // création de la ligne telephone
 		String mail = "Mail : "+tableur[nb][4]; //creation de la lignee mail
 		
@@ -282,7 +283,7 @@ public class Test {
 					 run.replaceText("Nom",tableur[nb][1]);
 					 run.replaceText("adresse",tableur[nb][2]);
 					 run.replaceText("tel",tel);
-					 run.replaceText("email",mail); //ATTENTION : utiliser 'email' et pas simplement 'mail' sinon problÃ¨me avec les fin d'adresse 'gmail' ou 'hotmail'
+					 run.replaceText("email",mail); //ATTENTION : utiliser 'email' et pas simplement 'mail' sinon problÃƒÂ¨me avec les fin d'adresse 'gmail' ou 'hotmail'
 				 }
 			 } 
 		 } 
