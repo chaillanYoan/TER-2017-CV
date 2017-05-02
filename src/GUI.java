@@ -16,8 +16,6 @@ import javax.swing.text.NumberFormatter;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
-import javafx.scene.input.KeyCode;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -36,6 +34,8 @@ import java.awt.Color;
 import javax.swing.JCheckBox;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.ActionListener;
+import javax.swing.ListSelectionModel;
 
 public class GUI {
 	
@@ -65,6 +65,8 @@ public class GUI {
 	private JTable tableRandom;
 	
 	private Test testing;
+	
+	private int caseSelectTableauLM;
 	
 	
 
@@ -600,6 +602,14 @@ public class GUI {
 			};
 		
 		tableLM = new JTable();
+		tableLM.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		tableLM.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				System.out.println("olol:"+tableLM.getSelectedRow());
+				caseSelectTableauLM = tableLM.getSelectedRow();
+			}
+		});
 		tableLM.setModel(modelLM);
 		tableLM.getColumnModel().getColumn(2).setMaxWidth(150);
 		tableLM.getColumnModel().getColumn(2).setMinWidth(100);
@@ -660,15 +670,67 @@ public class GUI {
 		
 		
 		JButton btnMonterLM = new JButton("Monter");
+		btnMonterLM.setMnemonic(KeyEvent.VK_E);
+		btnMonterLM.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("avant:"+templatesLM+"    - SIZE:"+templatesLM.size()+"  caseSelectTableauLM:"+caseSelectTableauLM);
+				//TODO monter
+				if(caseSelectTableauLM > 0){
+					/*changement de l'arraylist*/
+					Template t1 = templatesLM.get(caseSelectTableauLM);
+					templatesLM.set(caseSelectTableauLM, templatesLM.get(caseSelectTableauLM-1));
+					templatesLM.set(caseSelectTableauLM-1, t1);
+					
+					/*changement de la Jtable*/
+					
+					modelLM.moveRow(caseSelectTableauLM, caseSelectTableauLM, caseSelectTableauLM-1);
+					//modelLM.addRow(new Object[]{name, path, "Supprimer"});
+				}
+				
+				if(caseSelectTableauLM > 0){
+					tableLM.changeSelection(caseSelectTableauLM-1, caseSelectTableauLM-1, false, false);
+					caseSelectTableauLM--;
+				}
+				System.out.println("apres:"+templatesLM+"    - SIZE:"+templatesLM.size()+"  caseSelectTableauLM:"+caseSelectTableauLM+"\n");
+			}
+		});
+		
+		
 		sl_panel1.putConstraint(SpringLayout.NORTH, btnMonterLM, 204, SpringLayout.NORTH, panel1);
 		sl_panel1.putConstraint(SpringLayout.WEST, btnMonterLM, 6, SpringLayout.EAST, scrollPanelListeLM);
 		panel1.add(btnMonterLM);
 		
 		
 		JButton btnDescendreLM = new JButton("Descendre");
+		btnDescendreLM.setMnemonic(KeyEvent.VK_D);
+		btnDescendreLM.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("avant:"+templatesLM+"    - SIZE:"+templatesLM.size()+"  caseSelectTableauLM:"+caseSelectTableauLM);
+				//TODO monter
+				if(caseSelectTableauLM < templatesLM.size()-1 && caseSelectTableauLM >= 0){
+					/*changement de l'arraylist*/
+					Template t1 = templatesLM.get(caseSelectTableauLM);
+					templatesLM.set(caseSelectTableauLM, templatesLM.get(caseSelectTableauLM+1));
+					templatesLM.set(caseSelectTableauLM+1, t1);
+					
+					/*changement de la Jtable*/
+					
+					modelLM.moveRow(caseSelectTableauLM, caseSelectTableauLM, caseSelectTableauLM+1);
+					//modelLM.addRow(new Object[]{name, path, "Supprimer"});
+				}
+				
+				if(caseSelectTableauLM < templatesLM.size()-1){
+					tableLM.changeSelection(caseSelectTableauLM+1, caseSelectTableauLM+1, false, false);
+					caseSelectTableauLM++;
+				}
+				
+				System.out.println("apres:"+templatesLM+"    - SIZE:"+templatesLM.size()+"  caseSelectTableauLM:"+caseSelectTableauLM+"\n");
+			}
+		});
 		sl_panel1.putConstraint(SpringLayout.NORTH, btnDescendreLM, 23, SpringLayout.SOUTH, btnMonterLM);
 		sl_panel1.putConstraint(SpringLayout.WEST, btnDescendreLM, 6, SpringLayout.EAST, scrollPanelListeLM);
 		panel1.add(btnDescendreLM);
+		
 		
 		JLabel lblListeDesLettres = new JLabel("Liste des lettres de motivation :");
 		sl_panel1.putConstraint(SpringLayout.NORTH, scrollPanelListeLM, 6, SpringLayout.SOUTH, lblListeDesLettres);
@@ -679,19 +741,6 @@ public class GUI {
 
 		
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-
 
 		
 		
