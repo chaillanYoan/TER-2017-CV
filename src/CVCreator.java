@@ -20,7 +20,7 @@ public class CVCreator {
 	}
 	
 	
-	public void createCVData(int nombreOffre, int nombreCVParOffre){
+	public void createCVData(int nombreOffre, int nombreCVParOffre, long seed){
 		//creation de la matrice
 		tableur = new String[(nombreOffre * nombreCVParOffre) + 1][ep.getMaxLineLength()];
 		//initialisation de la premiere ligne.
@@ -28,8 +28,9 @@ public class CVCreator {
 			tableur[0][i] = ep.def[0][i];
 		}
 		for(int i = 0; i < nombreOffre; i++){
-
-			MatrixManipulation.shuffleSourceData(ep.links, ep.def,ep.getMaxColumnLength());
+			
+			//on utilise la seed donnée + le numéro d'annonce pour changer le mélange à chaque annonce
+			MatrixManipulation.shuffleSourceData(ep.links, ep.def,ep.getMaxColumnLength(), seed+i);
 			System.out.println();
 			System.out.println(i);
 			for(int v = 0; v < 5;v++){

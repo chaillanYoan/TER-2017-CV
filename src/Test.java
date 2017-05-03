@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -33,13 +34,18 @@ public class Test {
 	private ArrayList<Template> templates = new ArrayList<Template>();//liste des templates
 	private String outputFolder, excelPath;//dossier de sortie et chemin du .xls
 	
+	private long seed;
+	private boolean liaisonCV_LM = false, annonceMemeQualite = false;
+	
 	private CVCreator cvc;
 	
 	
-	public void init(ArrayList<Template> t, String output, String excel){
-		/*le caractere "\" est special et il faut le signaler avec un \ avant donc Ã§a donne : "\\" pour les chemins windows
-		 * 
-		 */
+	public void init(ArrayList<Template> t, String output, String excel, boolean liaison, boolean qualite, long seed){
+		this.liaisonCV_LM = liaison;
+		this.annonceMemeQualite = qualite;
+		this.seed = seed;
+		
+		//le caractere "\" est special et il faut le signaler avec un \ avant donc ca donne : "\\" pour les chemins windows
 		for(int i=0; i<t.size(); i++)
 			t.set(i, new Template(t.get(i).filename.replace("\\","\\\\"),t.get(i).filepath.replace("\\","\\\\")));
 		
@@ -59,9 +65,11 @@ public class Test {
 		ExcelParser ep = new ExcelParser();
 		ep.getSourceExcel(this.excelPath);
 		cvc = new CVCreator(ep);
-		cvc.createCVData(nbOffres, CVparOffre);
+		cvc.createCVData(nbOffres, CVparOffre, seed);
 		
 		//this.tempprint(cvc);
+		
+		//renvoie le tableau mélangé avec en plus la colonne n° annonce 
 		return returnOfGenerate(cvc.getTableur(),nbOffres,CVparOffre);
 	}
 	
@@ -99,16 +107,22 @@ public class Test {
 	 * @param nbCvParOffre nombre de CV pour chaque offre
 	 * @throws IOException
 	 */
-	public void create(int nbOffres, int nbCvParOffre) throws IOException{
-		System.out.println("liste templates : "+templates);
-		//on melange l'ordre des templates dans l'arraylist
-		Collections.shuffle(templates);
-		System.out.println("liste templates shuffled : "+templates);
-		
-		
+	public void create(int nbOffres, int nbCvParOffre, long seed) throws IOException{
 		int cpt = 0, numAnnonce =  1;
 		
 		for(int i = 0; i<nbOffres*nbCvParOffre; i++){
+			
+			if(seed > 0){
+				System.out.println("liste templates : "+templates);
+				Collections.shuffle(templates,new Random(seed+i));
+				System.out.println("seed:"+(seed+i)+" - liste templates shuffled : "+templates);
+			}
+			else{
+				System.out.println("liste templates : "+templates);
+				Collections.shuffle(templates,new Random());
+				System.out.println("no seed - liste templates shuffled : "+templates);
+			}
+			
 			if(cpt == nbCvParOffre){
 				cpt = 0;
 				numAnnonce++;
@@ -147,8 +161,6 @@ public class Test {
 		
 	}
 	
-	
-
 	
 
 	/**

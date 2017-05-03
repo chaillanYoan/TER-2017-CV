@@ -52,7 +52,7 @@ public class Popup extends JFrame {
 		
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-		setBounds((int)p.getX()+150, (int)p.getY()+250, 300, 200);
+		setBounds((int)p.getX()+350, (int)p.getY()+250, 300, 200);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);

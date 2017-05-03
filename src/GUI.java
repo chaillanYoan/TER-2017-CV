@@ -58,7 +58,7 @@ public class GUI {
 	private ArrayList<Template> templatesLM = new ArrayList<Template>();
 	
 	private int nombreAnnonces = -1, nombreCvParAnnonce = -1;
-	private long seed;
+	private long seed = -1;
 	private boolean liaisonCV_LM = false, annonceMemeQualite = false;
 	
 	private DefaultTableModel modelRandom;
@@ -126,16 +126,19 @@ public class GUI {
 		
 		
 		JLabel lblFichierExcelxsl = new JLabel("Base de donnée (.xls) :");
+		lblFichierExcelxsl.setToolTipText("<html>\r\nFichier contenant les données nécessaires à la création des CV et Lettre de Motivation :<br>\r\n<ul>\r\n<li>Nom</li>\r\n<li>Prenom</li>\r\n<li>Adresse</li>\r\n<li>Email</li>\r\n<li>Téléphone</li>\r\n<li>...</li>\r\n</u>\r\n</html>");
 		sl_panel1.putConstraint(SpringLayout.NORTH, lblFichierExcelxsl, 35, SpringLayout.NORTH, panel1);
 		sl_panel1.putConstraint(SpringLayout.SOUTH, lblFichierExcelxsl, 51, SpringLayout.NORTH, panel1);
 		panel1.add(lblFichierExcelxsl);
 		
 		
 		JLabel lblDossierDeDestination = new JLabel("Dossier de destination :");
+		lblDossierDeDestination.setToolTipText("Dossier où seront créés CV et Lettres de motivation");
 		panel1.add(lblDossierDeDestination);
 		
 		
 		JLabel lblTemplatesDeCv = new JLabel("Templates de CV (.doc) :");
+		lblTemplatesDeCv.setToolTipText("Template de base des CV au format word (.doc)");
 		sl_panel1.putConstraint(SpringLayout.EAST, lblDossierDeDestination, 0, SpringLayout.EAST, lblTemplatesDeCv);
 		sl_panel1.putConstraint(SpringLayout.NORTH, lblTemplatesDeCv, 34, SpringLayout.SOUTH, lblFichierExcelxsl);
 		panel1.add(lblTemplatesDeCv);
@@ -171,10 +174,11 @@ public class GUI {
 				else if(nombreCvParAnnonce < 0){
 					Point p = frmTer.getLocation();
 					Popup.pop(p,"Veuillez choisir le nombre de CV par annonce.");
-				} else{
+				} 
+				else{
 					System.out.println("pre test");
 					testing = new Test();
-					testing.init(templates, outputFolder, excelPath);
+					testing.init(templates, outputFolder, excelPath, liaisonCV_LM, annonceMemeQualite, seed);
 					String[][] t = null;
 					try {
 						t = testing.generate(nombreAnnonces,nombreCvParAnnonce);
@@ -328,6 +332,7 @@ public class GUI {
 		
 		
 		JLabel lblNombreDannonces = new JLabel("Nombre d'annonces :");
+		lblNombreDannonces.setToolTipText("Chaque annonce aura un mélange aléatoire de la base de donnée différent");
 		sl_panel1.putConstraint(SpringLayout.SOUTH, lblDossierDeDestination, -34, SpringLayout.NORTH, lblNombreDannonces);
 		sl_panel1.putConstraint(SpringLayout.NORTH, lblNombreDannonces, 540, SpringLayout.NORTH, panel1);
 		sl_panel1.putConstraint(SpringLayout.EAST, lblNombreDannonces, 212, SpringLayout.WEST, panel1);
@@ -336,6 +341,7 @@ public class GUI {
 		
 		
 		JLabel lblNombreDeCv = new JLabel("Nombre de CV par annonce :");
+		lblNombreDeCv.setToolTipText("Nombre de CV par annonce");
 		sl_panel1.putConstraint(SpringLayout.NORTH, lblNombreDeCv, 580, SpringLayout.NORTH, panel1);
 		sl_panel1.putConstraint(SpringLayout.WEST, lblNombreDeCv, 44, SpringLayout.WEST, panel1);
 		sl_panel1.putConstraint(SpringLayout.SOUTH, lblNombreDeCv, -115, SpringLayout.SOUTH, panel1);
@@ -483,6 +489,7 @@ public class GUI {
 		panelOptions.setLayout(sl_panelOptions);
 		
 		JLabel lblSeedDeGnration = new JLabel("Seed de génération :");
+		lblSeedDeGnration.setToolTipText("Seed utilisée pour le mélange aléatoire. Si vide une seed sera utilisée au hasard.");
 		sl_panelOptions.putConstraint(SpringLayout.NORTH, lblSeedDeGnration, 22, SpringLayout.NORTH, panelOptions);
 		sl_panelOptions.putConstraint(SpringLayout.WEST, lblSeedDeGnration, 26, SpringLayout.WEST, panelOptions);
 		panelOptions.add(lblSeedDeGnration);
@@ -490,6 +497,7 @@ public class GUI {
 		
 		/*CheckBox pour la liaison entre les tableaus de CV et de LM*/
 		JCheckBox chckbxLiaisonCV_LM = new JCheckBox("Liaison CV - LM ");
+		chckbxLiaisonCV_LM.setToolTipText("<html>\r\nLie (ou non) les CV et LM des 2 tableau : le CV et la LM d'une même ligne seront toujours créés ensembles.<br>\r\n<ul>\r\n<li>Coché : CV et LM liés </li>\r\n<li>Décoché : CV et LM <u>non liés</u> </li>\r\n<ul>\r\n</html>");
 		chckbxLiaisonCV_LM.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -509,6 +517,7 @@ public class GUI {
 		panelOptions.add(chckbxLiaisonCV_LM);
 		
 		JCheckBox chckbxMmeQualitPour = new JCheckBox("Même qualité pour les CV et LM d'une même annonce");
+		chckbxMmeQualitPour.setToolTipText("<html>\r\nSi vous utilisez des templates de différents type (ou qualité ex: 1 xxx.doc, 2xxx.doc...),<br>\r\ncochez cette case si vous voulez que tout les CV et LM d'une même annonce soient du même type (ou qualité).\r\n</html>");
 		chckbxMmeQualitPour.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -566,6 +575,7 @@ public class GUI {
 		
 		
 		JLabel lblOptions = new JLabel("<html><u>Options +__________</u></html>");
+		lblOptions.setToolTipText("Choix additionels");
 		lblOptions.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -632,6 +642,7 @@ public class GUI {
 		
 		
 		JLabel lblTemplatesDeLm = new JLabel("Templates de LM (.doc) :");
+		lblTemplatesDeLm.setToolTipText("Template de base des lettres de motivation au format word (.doc)");
 		sl_panel1.putConstraint(SpringLayout.SOUTH, lblTemplatesDeLm, -47, SpringLayout.NORTH, scrollPanelListeLM);
 		sl_panel1.putConstraint(SpringLayout.EAST, btnParcourirTemplate, -54, SpringLayout.WEST, lblTemplatesDeLm);
 		sl_panel1.putConstraint(SpringLayout.WEST, lblTemplatesDeLm, 525, SpringLayout.WEST, panel1);
@@ -670,6 +681,7 @@ public class GUI {
 		
 		
 		JButton btnMonterLM = new JButton("Monter");
+		btnMonterLM.setToolTipText("Monte la lettre de motivation sélectionnée d'une ligne. (Raccourcis : ALT+E)");
 		btnMonterLM.setMnemonic(KeyEvent.VK_E);
 		btnMonterLM.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -702,6 +714,7 @@ public class GUI {
 		
 		
 		JButton btnDescendreLM = new JButton("Descendre");
+		btnDescendreLM.setToolTipText("Descend la lettre de motivation sélectionnée d'une ligne. (Raccourcis : ALT+D)");
 		btnDescendreLM.setMnemonic(KeyEvent.VK_D);
 		btnDescendreLM.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -783,9 +796,11 @@ public class GUI {
 			public void mouseClicked(MouseEvent e) {
 				System.out.println("Et là les CVs sont créés");
 				try {
-					testing.create(nombreAnnonces, nombreCvParAnnonce);
+					testing.create(nombreAnnonces, nombreCvParAnnonce,seed);
+					Point p = frmTer.getLocation();
+					Popup.pop(p,"Création des CV et LM terminée !");
 				} catch (IOException e1) {
-					// Auto-generated catch block
+					//Auto-generated catch block
 					e1.printStackTrace();
 				}
 			
@@ -853,7 +868,7 @@ public class GUI {
 		templatesLM.add(t);
 		
 		/*Ajout au GUI*/
-		if(table.getRowCount() == 0){
+		if(tableLM.getRowCount() == 0){
 			modelLM.addRow(new Object[]{name, path, "Supprimer"});
 		}
 		else{

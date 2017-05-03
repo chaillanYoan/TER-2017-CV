@@ -7,8 +7,13 @@ public class MatrixManipulation {
 	
 	
 
-	public static void shuffleSourceData(int[] links, String def[][], int lineAmount){
-		Random rnd = new Random();
+	public static void shuffleSourceData(int[] links, String def[][], int lineAmount, long seed){
+		Random rnd;
+		if(seed>0)
+			rnd = new Random(seed);
+		else
+			rnd = new Random();
+		
 		int parsedLinks[] = new int[links.length];
 		
 		for(int i = 0; i < links.length; i++){
