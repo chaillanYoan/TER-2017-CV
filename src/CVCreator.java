@@ -67,30 +67,37 @@ public class CVCreator {
 		
 		
 		Range r1 = doc.getRange();
-	
+		int paragrapheDeAdresse2 = -1;
 		for ( int i = 0; i < r1.numSections(); ++i ) { 
 			 Section s = r1.getSection(i); 
+			 //System.out.println("new SECTION");
 			 for (int x = 0; x < s.numParagraphs(); x++) { 
 				 Paragraph p = s.getParagraph(x); 
+				 //System.out.println("new PARAGRAPH");
 				 for (int z = 0; z < p.numCharacterRuns(); z++){ 
-					 //character run 
 					 CharacterRun run = p.getCharacterRun(z); 
 					 //character run text 
 					 //String text = run.text(); 
 					 //System.out.println(text.toString());
 					 for(i=0;i < ep.getMaxLineLength(); i++){
-						 String txt = tableur[0][i];
-						 txt = "{{"+txt+"}}";
-						 String newtxt = tableur[nb][i];
-						 
-						 run.replaceText(txt, newtxt);
-						 
-					 }
-				 }
-			 } 
-		 } 
-		
-		
+						String txt = tableur[0][i];
+						txt = "{{"+txt+"}}";
+						String newtxt = tableur[nb][i];
+						if(run.text().toString().contains("{{adresse2}}") == true && tableur[nb][i].compareTo("") == 0){
+							//System.out.println("if : paragrapheDeAdresse2:"+paragrapheDeAdresse2);
+							paragrapheDeAdresse2 = x;
+						}
+						else
+							run.replaceText(txt, newtxt);
+					}
+				}
+			}
+			if(paragrapheDeAdresse2 > 0){
+				//System.out.println("olol on try paragrapheDeAdresse2:"+paragrapheDeAdresse2);
+				Paragraph ph = s.getParagraph(paragrapheDeAdresse2);
+				ph.delete();
+			}
+		} 
 		
 		//outputFileName = path/name.doc
 		String outputFileName = createOutputPath(numeroAnnonce,outputFolder,templatePath,tableur[nb][1],tableur[nb][0]);

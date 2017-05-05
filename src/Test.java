@@ -67,7 +67,7 @@ public class Test {
 		cvc = new CVCreator(ep);
 		cvc.createCVData(nbOffres, CVparOffre, seed);
 		
-		//this.tempprint(cvc);
+		this.tempprint(cvc);
 		
 		//renvoie le tableau mélangé avec en plus la colonne n° annonce 
 		return returnOfGenerate(cvc.getTableur(),nbOffres,CVparOffre);
@@ -149,11 +149,11 @@ public class Test {
 	}*/
 	
 	public void tempprint(CVCreator cvc){
-		System.out.println();
-		for(int i = 0; i < 7;i++){
+		System.out.println("Temp Print :");
+		for(int i = 0; i < cvc.tableur.length;i++){
 
 			System.out.print("||");
-			for(int j = 0; j < 5; j++){
+			for(int j = 0; j < cvc.tableur[i].length; j++){
 				System.out.print(cvc.tableur[i][j]+"||");
 			}
 			System.out.println();
