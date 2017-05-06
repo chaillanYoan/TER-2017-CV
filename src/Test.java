@@ -45,6 +45,7 @@ public class Test {
 		this.annonceMemeQualite = qualite;
 		this.seed = seed;
 		
+		
 		//le caractere "\" est special et il faut le signaler avec un \ avant donc ca donne : "\\" pour les chemins windows
 		for(int i=0; i<t.size(); i++)
 			t.set(i, new Template(t.get(i).filename.replace("\\","\\\\"),t.get(i).filepath.replace("\\","\\\\")));
@@ -108,31 +109,92 @@ public class Test {
 	 * @throws IOException
 	 */
 	public void create(int nbOffres, int nbCvParOffre, long seed) throws IOException{
-		int cpt = 0, numAnnonce =  1;
-		
-		for(int i = 0; i<nbOffres*nbCvParOffre; i++){
-			
-			if(seed > 0){
-				System.out.println("liste templates : "+templates);
-				Collections.shuffle(templates,new Random(seed+i));
-				System.out.println("seed:"+(seed+i)+" - liste templates shuffled : "+templates);
-			}
-			else{
-				System.out.println("liste templates : "+templates);
-				Collections.shuffle(templates,new Random());
-				System.out.println("no seed - liste templates shuffled : "+templates);
-			}
-			
-			if(cpt == nbCvParOffre){
-				cpt = 0;
-				numAnnonce++;
-			}
-			System.out.println("cv/offres:"+nbCvParOffre+"cpt="+cpt+" annonce="+numAnnonce);
-			
-			cvc.createCV(numAnnonce,i+1, this.templates.get(i%templates.size()).filepath, this.outputFolder);
-			cpt++;
-		}
-	}
+        int cpt = 0, numAnnonce =  1;
+        ArrayList<Integer> templatesValide = new ArrayList<Integer>();
+        //TODO templatesValide lettre motiv
+        Random rd = new Random(seed);
+        ArrayList<Template> t1 = new ArrayList<Template>();
+        for(Template s : templates){
+            t1.add(s);
+        }
+        if(annonceMemeQualite){
+            int getAmount[] = new int[9];
+            for(Template s : t1){
+                int i = s.filename.charAt(0) - 48;//48 = 0 ascii
+                System.out.println("ZZZZZZZZZZZ>>> "+i);
+                getAmount[i]++;
+ 
+            }
+            for(int i = 0; i < getAmount.length; i++){
+                if(getAmount[i] >= nbCvParOffre){
+                    templatesValide.add(i);
+                    System.out.println("ZZZZZZZZZZZKEEP>>> "+i);
+                }
+            }
+            /*Iterator<Template> it = t1.iterator();
+            while(it.hasNext()){
+                it.next();
+                Boolean destroy = true;
+                for(int i = 0;i<templatesValide.size(); i++){
+                    Template temp = it;
+                    if(temp.filename.charAt(0) - 48 == templatesValide.get(i))
+                        destroy = false;
+                }
+                if(destroy){
+                    it.remove();;
+                }
+            }*/
+            for(int i = 0; i < nbOffres;i++){
+                for(int j = 0; j < nbCvParOffre; j++){
+                   
+                }
+            }
+            ArrayList<Integer> temp = new ArrayList<Integer>();
+            for(int i = 0; i < nbOffres; i++){
+                int k = rd.nextInt(templatesValide.size()-1);
+                temp.add(templatesValide.get(k));
+            }
+            templatesValide = temp;
+        }
+        templates = t1;
+        for(int i = 0; i<nbOffres*nbCvParOffre; i++){
+           
+            if(seed > 0){
+                System.out.println("liste templates : "+templates);
+                Collections.shuffle(templates,new Random(seed+i));
+                System.out.println("seed:"+(seed+i)+" - liste templates shuffled : "+templates);
+            }
+            else{
+                System.out.println("liste templates : "+templates);
+                Collections.shuffle(templates,new Random());
+                System.out.println("no seed - liste templates shuffled : "+templates);
+            }
+           
+            if(cpt == nbCvParOffre){
+                cpt = 0;
+                numAnnonce++;
+                if(annonceMemeQualite){
+                    templatesValide.add(templatesValide.get(0));
+                    templatesValide.remove(0);
+                }
+            }
+            System.out.println("cv/offres:"+nbCvParOffre+"cpt="+cpt+" annonce="+numAnnonce);
+           
+            String path = this.templates.get(i%templates.size()).filepath;
+           
+            if(annonceMemeQualite){
+                int j = 0;
+                while(templates.get(j).filename.charAt(0)-48 != templatesValide.get(0)){
+                    j = rd.nextInt(templates.size()-1);
+                }
+                path = this.templates.get(j).filepath;
+            }
+            cvc.createCV(numAnnonce, i+1, path, this.outputFolder);
+           
+           
+            cpt++;
+        }
+    }
 	
 	
 	

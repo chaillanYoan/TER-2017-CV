@@ -406,7 +406,7 @@ public class GUI {
 		sl_panel1.putConstraint(SpringLayout.WEST, btnValiderNbCvAnnonce, 324, SpringLayout.WEST, panel1);
 		sl_panel1.putConstraint(SpringLayout.NORTH, btnValiderNbCvAnnonce, -6, SpringLayout.NORTH, lblNombreDeCv);
 		btnValiderNbCvAnnonce.addMouseListener(new MouseAdapter() {
-			@Override
+			@Override //TODO verfi nb CV avec qualité par rapport au nb cv/annonce si m^ qualité coché
 			public void mouseClicked(MouseEvent e) {
 				if(formattedTextFieldNbCvAnnonce.getValue() != null){
 					if(excelPath == null){
@@ -519,7 +519,7 @@ public class GUI {
 		JCheckBox chckbxMmeQualitPour = new JCheckBox("Même qualité pour les CV et LM d'une même annonce");
 		chckbxMmeQualitPour.setToolTipText("<html>\r\nSi vous utilisez des templates de différents type (ou qualité ex: 1 xxx.doc, 2xxx.doc...),<br>\r\ncochez cette case si vous voulez que tout les CV et LM d'une même annonce soient du même type (ou qualité).\r\n</html>");
 		chckbxMmeQualitPour.addKeyListener(new KeyAdapter() {
-			@Override
+			@Override //TODO verfi nb CV avec qualité par rapport au nb cv/annonce
 			public void keyReleased(KeyEvent e) {
 				if(e.getKeyCode() == KeyEvent.VK_SPACE){
 					annonceMemeQualite = !annonceMemeQualite;
