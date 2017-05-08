@@ -47,7 +47,6 @@ public class MatrixManipulation {
 						//System.out.print(link);
 						if(def[rand1][link] == "" || def[rand2][link] == ""){
 							exists = false;
-							System.out.println("ALARME");
 						}
 					}
 					if(exists){
@@ -61,7 +60,7 @@ public class MatrixManipulation {
 						}
 					}
 					else{
-						System.out.println("ALAAAAAAAAAAAAAAARME");
+						//System.out.println("ALAAAAAAAAAAAAAAARME");
 					}
 				}
 		}

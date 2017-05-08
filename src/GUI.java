@@ -69,6 +69,7 @@ public class GUI {
 	private int caseSelectTableauLM;
 	
 	
+	
 
 	/**
 	 * Launch the application.
@@ -151,34 +152,36 @@ public class GUI {
 		btnRandomisation.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				Point p = frmTer.getLocation();
+				
 				if(excelPath == null){
-					Point p = frmTer.getLocation();
 					Popup.pop(p,"Veuillez selectionner une base de donnée (.xls)");
 				}
 				else if(templates.size() == 0){
-					Point p = frmTer.getLocation();
 					Popup.pop(p,"Veuillez selectionner un template de CV (.doc)");
 				}
 				else if(templatesLM.size() == 0){
-					Point p = frmTer.getLocation();
 					Popup.pop(p,"Veuillez selectionner un template de LM (.doc)");
 				}
 				else if(outputFolder == null){
-					Point p = frmTer.getLocation();
 					Popup.pop(p,"Veuillez selectionner un dossier de sortie.");
 				}
 				else if(nombreAnnonces < 0){
-					Point p = frmTer.getLocation();
 					Popup.pop(p,"Veuillez choisir un nombre d'annonces.");
 				}
 				else if(nombreCvParAnnonce < 0){
-					Point p = frmTer.getLocation();
 					Popup.pop(p,"Veuillez choisir le nombre de CV par annonce.");
 				} 
+				else if(annonceMemeQualite && nombreCvParAnnonce > nombreMemeQualite(templates)){
+					Popup.pop(p,"Pas assez de templates de CV de même qualité.");
+				}
+				else if(annonceMemeQualite && nombreCvParAnnonce > nombreMemeQualite(templatesLM)){
+					Popup.pop(p,"Pas assez de templates de LM de même qualité.");
+				}
 				else{
 					System.out.println("pre test");
 					testing = new Test();
-					testing.init(templates, outputFolder, excelPath, liaisonCV_LM, annonceMemeQualite, seed);
+					testing.init(templates, templatesLM, outputFolder, excelPath, liaisonCV_LM, annonceMemeQualite, seed);
 					String[][] t = null;
 					try {
 						t = testing.generate(nombreAnnonces,nombreCvParAnnonce);
@@ -406,7 +409,7 @@ public class GUI {
 		sl_panel1.putConstraint(SpringLayout.WEST, btnValiderNbCvAnnonce, 324, SpringLayout.WEST, panel1);
 		sl_panel1.putConstraint(SpringLayout.NORTH, btnValiderNbCvAnnonce, -6, SpringLayout.NORTH, lblNombreDeCv);
 		btnValiderNbCvAnnonce.addMouseListener(new MouseAdapter() {
-			@Override //TODO verfi nb CV avec qualité par rapport au nb cv/annonce si m^ qualité coché
+			@Override
 			public void mouseClicked(MouseEvent e) {
 				if(formattedTextFieldNbCvAnnonce.getValue() != null){
 					if(excelPath == null){
@@ -519,7 +522,7 @@ public class GUI {
 		JCheckBox chckbxMmeQualitPour = new JCheckBox("Même qualité pour les CV et LM d'une même annonce");
 		chckbxMmeQualitPour.setToolTipText("<html>\r\nSi vous utilisez des templates de différents type (ou qualité ex: 1 xxx.doc, 2xxx.doc...),<br>\r\ncochez cette case si vous voulez que tout les CV et LM d'une même annonce soient du même type (ou qualité).\r\n</html>");
 		chckbxMmeQualitPour.addKeyListener(new KeyAdapter() {
-			@Override //TODO verfi nb CV avec qualité par rapport au nb cv/annonce
+			@Override
 			public void keyReleased(KeyEvent e) {
 				if(e.getKeyCode() == KeyEvent.VK_SPACE){
 					annonceMemeQualite = !annonceMemeQualite;
@@ -686,7 +689,6 @@ public class GUI {
 		btnMonterLM.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("avant:"+templatesLM+"    - SIZE:"+templatesLM.size()+"  caseSelectTableauLM:"+caseSelectTableauLM);
-				//TODO monter
 				if(caseSelectTableauLM > 0){
 					/*changement de l'arraylist*/
 					Template t1 = templatesLM.get(caseSelectTableauLM);
@@ -719,7 +721,6 @@ public class GUI {
 		btnDescendreLM.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("avant:"+templatesLM+"    - SIZE:"+templatesLM.size()+"  caseSelectTableauLM:"+caseSelectTableauLM);
-				//TODO monter
 				if(caseSelectTableauLM < templatesLM.size()-1 && caseSelectTableauLM >= 0){
 					/*changement de l'arraylist*/
 					Template t1 = templatesLM.get(caseSelectTableauLM);
@@ -910,4 +911,31 @@ public class GUI {
 			};
 		tableRandom.setModel(modelRandom);
 	}
+	
+	/**Fonction qui renvoie le nombre maximum de templates de même type**/
+	public int nombreMemeQualite(ArrayList<Template> tabTemplates){
+		int max = 0;
+		int cptTab[] = new int[10];
+		
+		for(int i=0; i<tabTemplates.size(); i++){
+			if(Character.isDigit(tabTemplates.get(i).getFilename().charAt(0))){
+				String s = ""+tabTemplates.get(i).getFilename().charAt(0);
+				cptTab[Integer.parseInt(s)] ++;
+			}
+			else
+				cptTab[0] ++;
+		}
+		
+		for(int i=0; i<cptTab.length; i++){
+			System.out.println("type "+i+" : "+cptTab[i]);
+			if(cptTab[i] > max)
+				max = cptTab[i];
+		}
+		
+		System.out.println("MAX="+max);
+		return max;
+	}
+	
+	
+	
 }

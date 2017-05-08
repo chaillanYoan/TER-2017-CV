@@ -52,6 +52,12 @@ public class CVCreator {
 	
 	
 	/** Fonction pour creer les CVs 
+	 * 
+	 * @param numeroAnnonce numero de l'annonce
+	 * @param nb numero de la personne dans le tableau de données contenant toutes les personnes de toutes les annonces
+	 * @param templatePath chemin du template
+	 * @param outputFolder dossier de sortie
+	 * 
 	 * @throws IOException **/
 	public void createCV(int numeroAnnonce, int nb, String templatePath, String outputFolder) throws IOException{
 	    
@@ -108,11 +114,13 @@ public class CVCreator {
 		if(outputFileName.contains("/"))
 			new File(outputFileName.substring(0, outputFileName.lastIndexOf('/'))).mkdirs();
 		
-		//System.out.println(doc.getDocumentText());
+		System.out.println("CV outputFileName : "+outputFileName);
 		doc.write(new File(outputFileName));
 		 
 		doc.close(); 
-		createLM(numeroAnnonce,nb,templatePath,outputFolder);
+		
+		//TODO remettre la création de LM ici avec en arg le type du CV pour que la LM soit dans le meme dosssier 
+		//createLM(numeroAnnonce,nb,templatePath,outputFolder);
 		
 	}
 	
@@ -122,13 +130,13 @@ public class CVCreator {
 	 * @throws IOException **/
 	public void createLM(int numeroAnnonce, int nb, String templatePath, String outputFolder) throws IOException{
 	    
-	   	System.out.println("Creation CV "+(nb));
+	   	System.out.println("Creation LM "+(nb));
 	   	
 	   	/*pour faire simple on remplace "telephone" par "telephone : 0632548654" au lieu de rajouter le numéro ÃƒÂ  la suite*/
 		//String tel = "Téléphone : "+tableur[nb][3]; // création de la ligne telephone
 		//String mail = "Mail : "+tableur[nb][4]; //creation de la lignee mail
 		
-		FileInputStream fis = new FileInputStream("zinput\\LM\\LM"+(nb%2+1)+".doc");
+		FileInputStream fis = new FileInputStream(templatePath);
 		POIFSFileSystem fs = new POIFSFileSystem(fis);
 		HWPFDocument doc = new HWPFDocument(fs);
 		
@@ -157,8 +165,6 @@ public class CVCreator {
 			 } 
 		 } 
 		
-		
-		
 		//outputFileName = path/name.doc
 		String outputFileName = createOutputPath(numeroAnnonce,outputFolder,templatePath,tableur[nb][1],tableur[nb][0]);
 		
@@ -168,7 +174,7 @@ public class CVCreator {
 		if(outputFileName.contains("/"))
 			new File(outputFileName.substring(0, outputFileName.lastIndexOf('/'))).mkdirs();
 		
-		//System.out.println(doc.getDocumentText());
+		System.out.println("LM outputFileName : "+outputFileName);
 		doc.write(new File(outputFileName.replaceAll(".doc", " LM.doc")));
 		doc.close(); 
 	}
@@ -212,17 +218,19 @@ public class CVCreator {
 	public static String creatOutputName(String templateName, String nom, String prenom){
 		String outputName;
 		
-		if(templateName.compareTo("P_NOM.doc") == 0){
+		if(templateName.compareTo("P_NOM.doc") == 0 || templateName.compareTo("P_NOM_LM.doc") == 0){
 			outputName = prenom.substring(0, 1).toUpperCase()+"_"+nom.toUpperCase();
 		}
-		else if(templateName.compareTo("NOM.doc") == 0){
+		else if(templateName.compareTo("NOM.doc") == 0 || templateName.compareTo("NOM LM.doc") == 0){
 			outputName = nom.toUpperCase();
 		}
-		else if(templateName.compareTo("Prénom Nom.doc") == 0){
+		else if(templateName.compareTo("Prénom Nom.doc") == 0 || templateName.compareTo("Prénom Nom LM.doc") == 0){
 			outputName = prenom.substring(0, 1).toUpperCase()+prenom.substring(1, prenom.length()).toLowerCase()+" "+nom.substring(0, 1).toUpperCase()+nom.substring(1, nom.length()).toLowerCase();
 		}
-		else
+		else{
 			outputName = prenom+" "+nom;
+			outputName.toLowerCase();
+		}
 		
 		return outputName+".doc";
 	}

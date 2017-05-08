@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Random;
 
 import org.apache.poi.EncryptedDocumentException;
@@ -32,6 +33,7 @@ public class Test {
 	String tableur[][];//tableau recevant les données pour les cv a creer.
 	
 	private ArrayList<Template> templates = new ArrayList<Template>();//liste des templates
+	private ArrayList<Template> templatesLM = new ArrayList<Template>();
 	private String outputFolder, excelPath;//dossier de sortie et chemin du .xls
 	
 	private long seed;
@@ -40,22 +42,29 @@ public class Test {
 	private CVCreator cvc;
 	
 	
-	public void init(ArrayList<Template> t, String output, String excel, boolean liaison, boolean qualite, long seed){
+	public void init(ArrayList<Template> t, ArrayList<Template> tlm, String output, String excel, boolean liaison, boolean qualite, long seed){
 		this.liaisonCV_LM = liaison;
 		this.annonceMemeQualite = qualite;
 		this.seed = seed;
 		
 		
 		//le caractere "\" est special et il faut le signaler avec un \ avant donc ca donne : "\\" pour les chemins windows
-		for(int i=0; i<t.size(); i++)
+		//en fait pas besoin, autant pour moi (ça marchait quand même avec les .replace mais pas besoin)
+		/*for(int i=0; i<t.size(); i++)
 			t.set(i, new Template(t.get(i).filename.replace("\\","\\\\"),t.get(i).filepath.replace("\\","\\\\")));
-		
 		for(int i=0; i<t.size(); i++)
 			System.out.println(t.get(i).filepath);
 		
+		for(int i=0; i<tlm.size(); i++)
+			tlm.set(i, new Template(tlm.get(i).filename.replace("\\","\\\\"),tlm.get(i).filepath.replace("\\","\\\\")));
+		for(int i=0; i<tlm.size(); i++)
+			System.out.println(tlm.get(i).filepath);*/
+		
+		
 		this.templates = t;
-		this.outputFolder = output.replace("\\","\\\\");
-		this.excelPath = excel.replace("\\","\\\\");
+		this.templatesLM = tlm;
+		this.outputFolder = output;//.replace("\\","\\\\");
+		this.excelPath = excel;//.replace("\\","\\\\");
 	}
 	
 	
@@ -102,7 +111,6 @@ public class Test {
 	
 	/**
 	 * Fonction créant 'nbCvParOffre' pour chaque offre (définit par 'nbOffres') 
-	 * TODO Collections.shuffle(templates) a chaque nouvelle annonce ?
 	 * 
 	 * @param nbOffres nombre d'annonces d'offres
 	 * @param nbCvParOffre nombre de CV pour chaque offre
@@ -110,91 +118,157 @@ public class Test {
 	 */
 	public void create(int nbOffres, int nbCvParOffre, long seed) throws IOException{
         int cpt = 0, numAnnonce =  1;
-        ArrayList<Integer> templatesValide = new ArrayList<Integer>();
-        //TODO templatesValide lettre motiv
-        Random rd = new Random(seed);
-        ArrayList<Template> t1 = new ArrayList<Template>();
-        for(Template s : templates){
-            t1.add(s);
-        }
-        if(annonceMemeQualite){
-            int getAmount[] = new int[9];
-            for(Template s : t1){
-                int i = s.filename.charAt(0) - 48;//48 = 0 ascii
-                System.out.println("ZZZZZZZZZZZ>>> "+i);
-                getAmount[i]++;
- 
-            }
-            for(int i = 0; i < getAmount.length; i++){
-                if(getAmount[i] >= nbCvParOffre){
-                    templatesValide.add(i);
-                    System.out.println("ZZZZZZZZZZZKEEP>>> "+i);
-                }
-            }
-            /*Iterator<Template> it = t1.iterator();
-            while(it.hasNext()){
-                it.next();
-                Boolean destroy = true;
-                for(int i = 0;i<templatesValide.size(); i++){
-                    Template temp = it;
-                    if(temp.filename.charAt(0) - 48 == templatesValide.get(i))
-                        destroy = false;
-                }
-                if(destroy){
-                    it.remove();;
-                }
-            }*/
-            for(int i = 0; i < nbOffres;i++){
-                for(int j = 0; j < nbCvParOffre; j++){
-                   
-                }
-            }
-            ArrayList<Integer> temp = new ArrayList<Integer>();
-            for(int i = 0; i < nbOffres; i++){
-                int k = rd.nextInt(templatesValide.size()-1);
-                temp.add(templatesValide.get(k));
-            }
-            templatesValide = temp;
-        }
-        templates = t1;
-        for(int i = 0; i<nbOffres*nbCvParOffre; i++){
-           
-            if(seed > 0){
-                System.out.println("liste templates : "+templates);
-                Collections.shuffle(templates,new Random(seed+i));
-                System.out.println("seed:"+(seed+i)+" - liste templates shuffled : "+templates);
+        //ArrayList<Integer> templatesValide = new ArrayList<Integer>();
+        //TODO templatesValide a faire pour les lettres de motivation aussi
+        //Random rd = new Random(seed);
+        ArrayList<Integer> listeCV;
+        ArrayList<Integer> listeLM;
+        
+        if(!annonceMemeQualite){
+        	if(seed > 0){
+            	if(liaisonCV_LM){
+            		Collections.shuffle(templatesLM,new Random(seed));
+            		Collections.shuffle(templates,new Random(seed));
+            	}
+            	else{
+	                //System.out.println("liste templates : "+templates);
+	                Collections.shuffle(templates,new Random(seed));
+	                Collections.shuffle(templatesLM,new Random(3*seed));
+	                //System.out.println("seed:"+(seed+i)+" - liste templates shuffled : "+templates);
+            	}
             }
             else{
-                System.out.println("liste templates : "+templates);
-                Collections.shuffle(templates,new Random());
-                System.out.println("no seed - liste templates shuffled : "+templates);
+            	if(liaisonCV_LM){
+            		int rnd = new Random().nextInt();
+            		//System.out.println("liste templates : "+templates);
+            		//System.out.println("liste templates LM: "+templatesLM);
+            		
+            		Collections.shuffle(templatesLM,new Random(rnd));
+            		Collections.shuffle(templates,new Random(rnd));
+            		
+            		
+            		//System.out.println("no seed - liste templates shuffled : "+templates);
+            		//System.out.println("no seed - liste templates LM shuffled : "+templatesLM);
+            		
+            	}
+            	else{
+	                //System.out.println("no liaison - liste templates : "+templates);
+            		//System.out.println("no liaison - liste templates LM: "+templatesLM);
+	                Collections.shuffle(templates,new Random());
+	                Collections.shuffle(templatesLM,new Random());
+	                //System.out.println("no liaison - no seed - liste templates shuffled : "+templates);
+            		//System.out.println("no liaison - no seed - liste templates LM shuffled : "+templatesLM);
+            	}
             }
+        	
+        	listeCV = null;
+        	listeLM = null;
+        }
+        else{
+        	System.out.println("liste templates : "+templates);
+        	System.out.println("liste templates LM: "+templatesLM);
+        	listeCV = CreerListeDeMemeQualitee(templates, nbCvParOffre, seed, nbOffres, false);
+        	listeLM = CreerListeDeMemeQualitee(templatesLM, nbCvParOffre, seed, nbOffres, true);
+        }
+        	
+        
+        for(int i = 0; i<nbOffres*nbCvParOffre; i++){
            
             if(cpt == nbCvParOffre){
                 cpt = 0;
                 numAnnonce++;
-                if(annonceMemeQualite){
-                    templatesValide.add(templatesValide.get(0));
-                    templatesValide.remove(0);
-                }
+                
             }
             System.out.println("cv/offres:"+nbCvParOffre+"cpt="+cpt+" annonce="+numAnnonce);
            
             String path = this.templates.get(i%templates.size()).filepath;
+            String pathLM = this.templatesLM.get(i%templatesLM.size()).filepath;
+            System.out.println(" de base pathLM:"+pathLM);
            
             if(annonceMemeQualite){
-                int j = 0;
-                while(templates.get(j).filename.charAt(0)-48 != templatesValide.get(0)){
-                    j = rd.nextInt(templates.size()-1);
-                }
-                path = this.templates.get(j).filepath;
+            	  path = this.templates.get(listeCV.get(i)).filepath;
+            	  pathLM = this.templatesLM.get(listeLM.get(i)).filepath;
+                
             }
             cvc.createCV(numAnnonce, i+1, path, this.outputFolder);
-           
+            System.out.println(" après pathLM:"+pathLM);
+            cvc.createLM(numAnnonce, i+1, pathLM, this.outputFolder);
            
             cpt++;
         }
     }
+	
+	
+	
+	
+	 /**
+     * Creer une liste d'entier qui correspond aux numeros des cv ou lm a choisir
+     * @param templateList la liste de templates de cv ou lm pour laquelle on veux generer la liste de choix.
+     * @param nbOffres nombre d'annonces d'offres
+     * @param nbCvParOffre nombre de CV pour chaque offre
+     * @throws IOException
+     * @return renvois une liste de cv ou lm de meme qualitée, conserve les liens de liaisonCV_LM si coché.
+     */
+    public ArrayList<Integer> CreerListeDeMemeQualitee(ArrayList<Template> templateList, int nbCvParOffre, long seed, int nbOffres, boolean lettreMotiv){
+    	System.out.println("---templateList : "+templateList);
+        ArrayList<Integer> templatesValide = new ArrayList<Integer>();
+        //random pour mélanger l'ordre de creation des cv
+        Random rd = new Random(seed);
+        //random pour mélanger l'ordre de creation des LM
+        Random rd2;
+        if(liaisonCV_LM){
+            rd2 = new Random(seed);
+        }
+        else{
+            rd2 = new Random(seed+12);
+        }
+        
+        //10 qualitées de cv
+        int getAmount[] = new int[10];
+        //compte combien de cv de chaque qualitée il y a
+        for(Template s : templateList){
+            int i = s.filename.charAt(0) - 48;//48 = 0 ascii
+            getAmount[i]++;
+        }
+        //contiens les valeurs de cv qu'on garde
+        for(int i = 0; i < getAmount.length; i++){
+            if(getAmount[i] >= nbCvParOffre){
+                templatesValide.add(i);
+            }
+        }
+        //genere une liste de cv à generer
+        ArrayList<Integer> listeTemplate = new ArrayList<Integer>();
+        for(int i = 0; i < nbOffres; i++){
+        	int qualiteeChoisie = templatesValide.get(rd.nextInt(templatesValide.size()));
+        	
+        	//System.out.println("qualiteeChoisie : "+qualiteeChoisie+" templatesValide.size() "+templatesValide.size());
+            for(int j = 0; j < nbCvParOffre; j++){
+                int indexDuCV = 0;
+                for(int k = 0; k < qualiteeChoisie; k++){
+                    indexDuCV+=getAmount[k];
+                }
+                //choisis un des cv de la qualitée en question(valeur de 1 au nombre de cv de cette qualitée)
+                if(lettreMotiv){
+                	indexDuCV+= rd2.nextInt(getAmount[qualiteeChoisie]);
+                	
+                	//on passe une valeur de rd dans le vide, pour en être au même moment que si c'était un CV
+                	@SuppressWarnings("unused")
+					int x = rd.nextInt(getAmount[qualiteeChoisie]-1)+1;
+                }
+                else
+                	indexDuCV+= rd.nextInt(getAmount[qualiteeChoisie]);
+                
+                //System.out.println("indexduCV : "+indexDuCV);
+                listeTemplate.add(indexDuCV);
+            }
+        }
+        
+        System.out.println(">>>listeTemplate : "+listeTemplate);
+        return listeTemplate;
+    }
+	
+	
+	
 	
 	
 	
@@ -209,6 +283,8 @@ public class Test {
 		olol.tempprint(cvc);
 		cvc.createCV(1, "TEST CV - NOM.doc");
 	}*/
+	
+	
 	
 	public void tempprint(CVCreator cvc){
 		System.out.println("Temp Print :");
