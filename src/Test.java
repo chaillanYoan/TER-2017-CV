@@ -83,7 +83,16 @@ public class Test {
 		return returnOfGenerate(cvc.getTableur(),nbOffres,CVparOffre);
 	}
 	
-	/*crée la colonne du numero d'annonce*/
+	
+	/**
+	 * Fonction créant la colonne du numero d'annonce
+	 * 
+	 * @param s tableau des données
+	 * @param nbOffres nombre d'annonces d'offres
+	 * @param nbCvParOffre nombre de CV pour chaque offre
+	 * 
+	 * @return tableau de données en entrée + une colonne avec le numéro d'annonce
+	 */
 	public String[][] returnOfGenerate(String[][] s, int nbOffres, int CVparOffre){
 		String [][] t = new String[s.length][(s[0].length)+1];
 		
@@ -119,7 +128,6 @@ public class Test {
 	public void create(int nbOffres, int nbCvParOffre, long seed) throws IOException{
         int cpt = 0, numAnnonce =  1;
         //ArrayList<Integer> templatesValide = new ArrayList<Integer>();
-        //TODO templatesValide a faire pour les lettres de motivation aussi
         //Random rd = new Random(seed);
         ArrayList<Integer> listeCV;
         ArrayList<Integer> listeLM;
@@ -192,7 +200,7 @@ public class Test {
             }
             cvc.createCV(numAnnonce, i+1, path, this.outputFolder);
             System.out.println(" après pathLM:"+pathLM);
-            cvc.createLM(numAnnonce, i+1, pathLM, this.outputFolder);
+            cvc.createLM(numAnnonce, i+1, pathLM, this.outputFolder, liaisonCV_LM, path);
            
             cpt++;
         }

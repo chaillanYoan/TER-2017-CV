@@ -20,6 +20,14 @@ public class CVCreator {
 	}
 	
 	
+	
+	/** Fonction pour creer les CVs 
+	 * 
+	 * @param nombreOffre nombre d'offres/d'annonces (renseignés par l'utilisateur)
+	 * @param nombreCVParOffre nombre de CV par offre (renseigné par l'utilisateur)
+	 * @param seed seed utilisé pour la création
+	 * 
+	 **/
 	public void createCVData(int nombreOffre, int nombreCVParOffre, long seed){
 		//creation de la matrice
 		tableur = new String[(nombreOffre * nombreCVParOffre) + 1][ep.getMaxLineLength()];
@@ -119,16 +127,20 @@ public class CVCreator {
 		 
 		doc.close(); 
 		
-		//TODO remettre la création de LM ici avec en arg le type du CV pour que la LM soit dans le meme dosssier 
-		//createLM(numeroAnnonce,nb,templatePath,outputFolder);
-		
 	}
 	
 	/** Fonction pour creer les LMs 
-	 * TODO changer chemin des LM
+	 *  
+	 * @param numeroAnnonce numero de l'annonce
+	 * @param nb numero de la personne dans le tableau de données final
+	 * @param templatePath chemin du template de LM
+	 * @param outputFolder dossier de sortie
+	 * @param liaisonCV_LM true si les CV et les LM sont liés
+	 * @param templatePathCV chemin du template du CV lié à la LM
+
 	 * 
 	 * @throws IOException **/
-	public void createLM(int numeroAnnonce, int nb, String templatePath, String outputFolder) throws IOException{
+	public void createLM(int numeroAnnonce, int nb, String templatePath, String outputFolder, boolean liaisonCV_LM, String templatePathCV) throws IOException{
 	    
 	   	System.out.println("Creation LM "+(nb));
 	   	
@@ -164,10 +176,37 @@ public class CVCreator {
 				 }
 			 } 
 		 } 
+		/*TODO recuperer dans des variables le nom et le prenom lors de la boucle for
+		 * pour les utiliser plus tard dans  createOutputPath()
+		 */
+		
 		
 		//outputFileName = path/name.doc
-		String outputFileName = createOutputPath(numeroAnnonce,outputFolder,templatePath,tableur[nb][1],tableur[nb][0]);
+		String outputFileName;
+			
+		/*Si les CV et LM sont liés on doit créer la LM dans le meme dossier que le CV, on doit donc d'abord récuperer le type du CV
+		 */
+		if(liaisonCV_LM){
+			
+			//contient le chemin de sortie du CV, donc où on doit créer la LM
+			String outputPath = createOutputPath(numeroAnnonce,outputFolder,templatePathCV,tableur[nb][1],tableur[nb][0]);
+			outputPath = outputPath.substring(0, outputPath.lastIndexOf('\\'));
+			
+			//contient le chemin de sortie de la LM, donc son nom de sortie
+			String nameLM = outputFileName = createOutputPath(numeroAnnonce,outputFolder,templatePath,tableur[nb][1],tableur[nb][0]);
+			nameLM = nameLM.substring(nameLM.lastIndexOf('\\'), nameLM.length());
 		
+			outputFileName = outputPath+nameLM;
+			
+			System.out.println("LM outputPath : "+outputPath);
+			System.out.println("LM nameLM : "+nameLM);
+			System.out.println("LM outputFileName : "+outputFileName);
+		}
+		else{
+			outputFileName = createOutputPath(numeroAnnonce,outputFolder,templatePath,tableur[nb][1],tableur[nb][0]);
+		}
+		
+	
 		//creation des sous dossiers output
 		if(outputFileName.contains("\\"))
 			new File(outputFileName.substring(0, outputFileName.lastIndexOf('\\'))).mkdirs();
@@ -180,6 +219,16 @@ public class CVCreator {
 	}
 
 	
+	
+	/** Fonction pour creer le chemin de sortie des CV et LM
+	 *  
+	 * @param numeroAnnonce numero de l'annonce
+	 * @param outputFolder dossier de sortie
+	 * @param templatePath chemin du template
+	 * @param nom nom de la personne
+	 * @param prenom prenom de la personne
+	 * 
+	 **/
 	public static String createOutputPath(int numeroAnnonce, String outputFolder, String templatePath, String nom, String prenom){
 		String outputPath = outputFolder;
 		String templateName;
@@ -215,6 +264,14 @@ public class CVCreator {
 	}
 	
 	
+	
+	/** Fonction pour creer le nom de sortie des templates
+	 *  
+	 * @param templateName nom du template
+	 * @param nom nom de la personne
+	 * @param prenom prenom de la personne
+	 * 
+	 **/
 	public static String creatOutputName(String templateName, String nom, String prenom){
 		String outputName;
 		
