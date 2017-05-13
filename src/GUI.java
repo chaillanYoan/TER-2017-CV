@@ -3,7 +3,6 @@ import java.awt.Point;
 
 import javax.swing.JFrame;
 import javax.swing.SpringLayout;
-import javax.swing.SwingConstants;
 import javax.swing.ToolTipManager;
 import javax.swing.JLabel;
 import javax.swing.AbstractAction;
@@ -40,12 +39,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.ActionListener;
 import javax.swing.ListSelectionModel;
 import java.awt.Font;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EtchedBorder;
-import javax.swing.border.MatteBorder;
-import javax.swing.border.SoftBevelBorder;
-import javax.swing.border.TitledBorder;
 
 public class GUI {
 	
