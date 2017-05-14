@@ -190,11 +190,17 @@ public class CVCreator {
 			
 			//contient le chemin de sortie du CV, donc où on doit créer la LM
 			String outputPath = createOutputPath(numeroAnnonce,outputFolder,templatePathCV,tableur[nb][1],tableur[nb][0]);
-			outputPath = outputPath.substring(0, outputPath.lastIndexOf('\\'));
+			if(outputPath.contains("\\"))
+				outputPath = outputPath.substring(0, outputPath.lastIndexOf('\\'));
+			else
+				outputPath = outputPath.substring(0, outputPath.lastIndexOf('/'));
 			
 			//contient le chemin de sortie de la LM, donc son nom de sortie
 			String nameLM = outputFileName = createOutputPath(numeroAnnonce,outputFolder,templatePath,tableur[nb][1],tableur[nb][0]);
-			nameLM = nameLM.substring(nameLM.lastIndexOf('\\'), nameLM.length());
+			if(outputPath.contains("\\"))
+				nameLM = nameLM.substring(nameLM.lastIndexOf('\\'), nameLM.length());
+			else
+				nameLM = nameLM.substring(nameLM.lastIndexOf('/'), nameLM.length());
 		
 			outputFileName = outputPath+nameLM;
 			
