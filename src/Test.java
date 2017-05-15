@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Random;
 
 import org.apache.poi.EncryptedDocumentException;
@@ -217,6 +218,13 @@ public class Test {
      * @return renvois une liste de cv ou lm de meme qualitée, conserve les liens de liaisonCV_LM si coché.
      */
     public ArrayList<Integer> CreerListeDeMemeQualitee(ArrayList<Template> templateList, int nbCvParOffre, long seed, int nbOffres, boolean lettreMotiv){
+    	
+    	Collections.sort(templateList, new Comparator<Template>() {
+            public int compare(Template one, Template two)  {
+                return one.filename.compareTo(two.filename);
+            }
+        });
+    	
     	System.out.println("---templateList : "+templateList);
         ArrayList<Integer> templatesValide = new ArrayList<Integer>();
         //random pour mélanger l'ordre de creation des cv

@@ -204,9 +204,6 @@ public class CVCreator {
 		
 			outputFileName = outputPath+nameLM;
 			
-			System.out.println("LM outputPath : "+outputPath);
-			System.out.println("LM nameLM : "+nameLM);
-			System.out.println("LM outputFileName : "+outputFileName);
 		}
 		else{
 			outputFileName = createOutputPath(numeroAnnonce,outputFolder,templatePath,tableur[nb][1],tableur[nb][0]);
