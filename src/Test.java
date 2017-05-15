@@ -4,8 +4,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Random;
 
+import org.apache.commons.cli.ParseException;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.artofsolving.jodconverter.cli.Convert;
+import org.json.JSONException;
 
 /*
 import java.io.File;
@@ -31,6 +34,10 @@ public class Test {
 	int ligneExcel;//nb lignes du tableau excel
 	int ligneLongue;//ligne la plus longue
 	String tableur[][];//tableau recevant les données pour les cv a creer.
+	
+	/*chemins des CV et LM a convertir en pdf*/
+	private ArrayList<String> CVdocToPdf = new ArrayList<String>();
+	private ArrayList<String> LMdocToPdf = new ArrayList<String>();
 	
 	private ArrayList<Template> templates = new ArrayList<Template>();//liste des templates
 	private ArrayList<Template> templatesLM = new ArrayList<Template>();
@@ -191,19 +198,34 @@ public class Test {
            
             String path = this.templates.get(i%templates.size()).filepath;
             String pathLM = this.templatesLM.get(i%templatesLM.size()).filepath;
-            System.out.println(" de base pathLM:"+pathLM);
            
             if(annonceMemeQualite){
             	  path = this.templates.get(listeCV.get(i)).filepath;
             	  pathLM = this.templatesLM.get(listeLM.get(i)).filepath;
                 
             }
-            cvc.createCV(numAnnonce, i+1, path, this.outputFolder);
-            System.out.println(" après pathLM:"+pathLM);
-            cvc.createLM(numAnnonce, i+1, pathLM, this.outputFolder, liaisonCV_LM, path);
+            
+            
+            Random randomPdf;
+            if(seed > 0)
+            	randomPdf = new Random(seed);
+            else 
+            	randomPdf = new Random();
+            
+            Boolean makePdf;
+            if(randomPdf.nextInt(100) < 50)
+            	makePdf = true;
+            else
+            	makePdf = false;
+            	
+            cvc.createCV(numAnnonce, i+1, path, this.outputFolder, makePdf);
+            cvc.createLM(numAnnonce, i+1, pathLM, this.outputFolder, liaisonCV_LM, path, makePdf);
            
             cpt++;
         }
+        
+        CVdocToPdf = cvc.getCVdocToPdf();
+        LMdocToPdf = cvc.getLMdocToPdf();
     }
 	
 	
@@ -251,6 +273,50 @@ public class Test {
                 templatesValide.add(i);
             }
         }
+        
+        
+        
+      //genere une liste de cv à generer
+        ArrayList<Integer> listeCV = new ArrayList<Integer>();
+        for(int i = 0; i < nbOffres; i++){
+            int qualiteeChoisie;
+            if(lettreMotiv)
+                qualiteeChoisie = templatesValide.get(rd2.nextInt(templatesValide.size()));
+            else
+                qualiteeChoisie = templatesValide.get(rd.nextInt(templatesValide.size()));
+            
+
+            int indexDuCV = 0;
+            int k = 0;
+            ArrayList<Integer> temp = new ArrayList<Integer>();
+            while(k < nbCvParOffre){
+                int genPermutation;
+
+                if(lettreMotiv)
+                    genPermutation= rd2.nextInt(getAmount[qualiteeChoisie]);
+                else
+                    genPermutation= rd.nextInt(getAmount[qualiteeChoisie]);
+                
+                if(!temp.contains(genPermutation)){
+                    temp.add(genPermutation);
+                    k++;
+                }
+
+            }
+            for(k = 0; k < qualiteeChoisie; k++){
+                indexDuCV+=getAmount[k];
+            }
+            
+            System.out.println("taille de temp :"+temp.size());
+            for(Integer in : temp){
+                listeCV.add(indexDuCV + in);
+            }
+
+        }
+        return listeCV;
+        
+        
+        /*
         //genere une liste de cv à generer
         ArrayList<Integer> listeTemplate = new ArrayList<Integer>();
         for(int i = 0; i < nbOffres; i++){
@@ -279,12 +345,35 @@ public class Test {
         }
         
         System.out.println(">>>listeTemplate : "+listeTemplate);
-        return listeTemplate;
+        return listeTemplate;*/
     }
 	
 	
 	
 	
+    public void createPdf(){
+    	Convert convertor = new Convert();
+    	String path[] = {null, null};
+    	
+    	path[0] = CVdocToPdf.get(0);
+    	path[1] = CVdocToPdf.get(0).replaceAll(".doc", ".pdf");
+    	
+    	try {
+			convertor.docToPdf(path);
+		} catch (ParseException | JSONException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    	System.out.println("----- createPdf -----");
+    	System.out.println("CV :");
+    	for(int i=0; i<CVdocToPdf.size(); i++)
+    		System.out.println(CVdocToPdf.get(i));
+    	
+    	System.out.println("LM :");
+    	for(int i=0; i<LMdocToPdf.size(); i++)
+    		System.out.println(LMdocToPdf.get(i));
+    }
 	
 	
 	/*public static void main(String[] args) throws IOException, EncryptedDocumentException, InvalidFormatException {

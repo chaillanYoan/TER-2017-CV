@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.usermodel.CharacterRun;
@@ -13,6 +14,9 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 public class CVCreator {
 	private ExcelParser ep;
 	public String tableur[][];
+
+	private ArrayList<String> CVdocToPdf = new ArrayList<String>();
+	private ArrayList<String> LMdocToPdf = new ArrayList<String>();
 
 
 	public CVCreator(ExcelParser ep_){
@@ -65,9 +69,10 @@ public class CVCreator {
 	 * @param nb numero de la personne dans le tableau de données contenant toutes les personnes de toutes les annonces
 	 * @param templatePath chemin du template
 	 * @param outputFolder dossier de sortie
+	 * @param pdf boolean designant si le CV sera convertit en pdf plus tard, ou non.
 	 * 
 	 * @throws IOException **/
-	public void createCV(int numeroAnnonce, int nb, String templatePath, String outputFolder) throws IOException{
+	public void createCV(int numeroAnnonce, int nb, String templatePath, String outputFolder, boolean pdf) throws IOException{
 	    
 	   	System.out.println("Creation CV "+(nb));
 	   	
@@ -127,6 +132,9 @@ public class CVCreator {
 		 
 		doc.close(); 
 		
+		if(pdf)
+			CVdocToPdf.add(outputFileName);
+		
 	}
 	
 	/** Fonction pour creer les LMs 
@@ -137,10 +145,11 @@ public class CVCreator {
 	 * @param outputFolder dossier de sortie
 	 * @param liaisonCV_LM true si les CV et les LM sont liés
 	 * @param templatePathCV chemin du template du CV lié à la LM
-
+	 * @param pdf boolean designant si la LM sera convertit en pdf plus tard, ou non.
+	 *
 	 * 
 	 * @throws IOException **/
-	public void createLM(int numeroAnnonce, int nb, String templatePath, String outputFolder, boolean liaisonCV_LM, String templatePathCV) throws IOException{
+	public void createLM(int numeroAnnonce, int nb, String templatePath, String outputFolder, boolean liaisonCV_LM, String templatePathCV, boolean pdf) throws IOException{
 	    
 	   	System.out.println("Creation LM "+(nb));
 	   	
@@ -154,6 +163,7 @@ public class CVCreator {
 		
 		
 		Range r1 = doc.getRange();
+		
 	
 		for ( int i = 0; i < r1.numSections(); ++i ) { 
 			 Section s = r1.getSection(i); 
@@ -169,8 +179,8 @@ public class CVCreator {
 						 String txt = tableur[0][i];
 						 txt = "{{"+txt+"}}";
 						 String newtxt = tableur[nb][i];
-						 
 						 run.replaceText(txt, newtxt);
+						 
 						 
 					 }
 				 }
@@ -184,30 +194,22 @@ public class CVCreator {
 		//outputFileName = path/name.doc
 		String outputFileName;
 			
-		/*Si les CV et LM sont liés on doit créer la LM dans le meme dossier que le CV, on doit donc d'abord récuperer le type du CV
-		 */
-		if(liaisonCV_LM){
-			
-			//contient le chemin de sortie du CV, donc où on doit créer la LM
-			String outputPath = createOutputPath(numeroAnnonce,outputFolder,templatePathCV,tableur[nb][1],tableur[nb][0]);
-			if(outputPath.contains("\\"))
-				outputPath = outputPath.substring(0, outputPath.lastIndexOf('\\'));
-			else
-				outputPath = outputPath.substring(0, outputPath.lastIndexOf('/'));
-			
-			//contient le chemin de sortie de la LM, donc son nom de sortie
-			String nameLM = outputFileName = createOutputPath(numeroAnnonce,outputFolder,templatePath,tableur[nb][1],tableur[nb][0]);
-			if(outputPath.contains("\\"))
-				nameLM = nameLM.substring(nameLM.lastIndexOf('\\'), nameLM.length());
-			else
-				nameLM = nameLM.substring(nameLM.lastIndexOf('/'), nameLM.length());
+		//Les CV et LM sont liés, on doit créer la LM dans le meme dossier que le CV, on doit donc d'abord récuperer le type du CV
+		//contient le chemin de sortie du CV, donc où on doit créer la LM
+		String outputPath = createOutputPath(numeroAnnonce,outputFolder,templatePathCV,tableur[nb][1],tableur[nb][0]);
+		if(outputPath.contains("\\"))
+			outputPath = outputPath.substring(0, outputPath.lastIndexOf('\\'));
+		else
+			outputPath = outputPath.substring(0, outputPath.lastIndexOf('/'));
 		
-			outputFileName = outputPath+nameLM;
-			
-		}
-		else{
-			outputFileName = createOutputPath(numeroAnnonce,outputFolder,templatePath,tableur[nb][1],tableur[nb][0]);
-		}
+		//contient le chemin de sortie de la LM, donc son nom de sortie
+		String nameLM = outputFileName = createOutputPath(numeroAnnonce,outputFolder,templatePath,tableur[nb][1],tableur[nb][0]);
+		if(outputPath.contains("\\"))
+			nameLM = nameLM.substring(nameLM.lastIndexOf('\\'), nameLM.length());
+		else
+			nameLM = nameLM.substring(nameLM.lastIndexOf('/'), nameLM.length());
+		
+		outputFileName = outputPath+nameLM;
 		
 	
 		//creation des sous dossiers output
@@ -216,9 +218,15 @@ public class CVCreator {
 		if(outputFileName.contains("/"))
 			new File(outputFileName.substring(0, outputFileName.lastIndexOf('/'))).mkdirs();
 		
-		System.out.println("LM outputFileName : "+outputFileName);
-		doc.write(new File(outputFileName.replaceAll(".doc", " LM.doc")));
+		String outputFileNameLm = outputFileName.replaceAll(".doc", " LM.doc");
+		System.out.println("LM outputFileName : "+outputFileNameLm);
+		doc.write(new File(outputFileNameLm));
 		doc.close(); 
+		
+		
+		
+		if(pdf)
+			LMdocToPdf.add(outputFileNameLm);
 	}
 
 	
@@ -296,8 +304,17 @@ public class CVCreator {
 	}
 	
 	
+	
 	public String[][] getTableur() {
 		return tableur;
+	}
+	
+	public ArrayList<String> getCVdocToPdf() {
+		return CVdocToPdf;
+	}
+
+	public ArrayList<String> getLMdocToPdf() {
+		return LMdocToPdf;
 	}
 	
 	

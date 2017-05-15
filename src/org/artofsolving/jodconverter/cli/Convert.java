@@ -63,7 +63,7 @@ public class Convert {
         return options;
     }
 
-    public static void main(String[] arguments) throws ParseException, JSONException, IOException {
+    public void docToPdf(String[] arguments) throws ParseException, JSONException, IOException {
         CommandLineParser commandLineParser = new PosixParser();
         CommandLine commandLine = commandLineParser.parse(OPTIONS, arguments);
 
@@ -102,7 +102,7 @@ public class Convert {
 
             	
             	System.out.println("converter line102 - filename out : "+fileNames[0]);
-                File inputFile = new File("‪C:\\Users\\yoanc\\Desktop\\TER\\input\\1NOM.doc");//fileNames[0]   "‪C:\\Users\\yoanc\\Desktop\\TER\\input\\1NOM.doc"
+                File inputFile = new File(fileNames[0]);//fileNames[0]   "‪C:\\Users\\yoanc\\Desktop\\TER\\input\\1NOM.doc"
                 
                 
                 File outputFile = new File(fileNames[1]);//fileNames[1]	  "‪C:\\Users\\yoanc\\Desktop\\TER\\ouput\\olol.pdf"

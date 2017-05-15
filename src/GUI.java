@@ -354,8 +354,9 @@ public class GUI {
 		
 		
 		JLabel lblNombreDeCv = new JLabel("<html>\r\nNombre de CV par annonce<sup>?</sup> :\r\n</html>");
-		sl_panel1.putConstraint(SpringLayout.WEST, lblNombreDeCv, 30, SpringLayout.WEST, panel1);
 		sl_panel1.putConstraint(SpringLayout.SOUTH, lblNombreDannonces, -11, SpringLayout.NORTH, lblNombreDeCv);
+		sl_panel1.putConstraint(SpringLayout.WEST, lblNombreDeCv, 30, SpringLayout.WEST, panel1);
+		sl_panel1.putConstraint(SpringLayout.EAST, lblNombreDeCv, 0, SpringLayout.EAST, lblNombreDannonces);
 		lblNombreDeCv.setToolTipText("Nombre de CV par annonce");
 		panel1.add(lblNombreDeCv);
 		
@@ -393,7 +394,6 @@ public class GUI {
 		
 		JFormattedTextField formattedTextFieldNbCvAnnonce = new JFormattedTextField(formatter);
 		sl_panel1.putConstraint(SpringLayout.NORTH, lblNombreDeCv, 0, SpringLayout.NORTH, formattedTextFieldNbCvAnnonce);
-		sl_panel1.putConstraint(SpringLayout.EAST, lblNombreDeCv, -6, SpringLayout.WEST, formattedTextFieldNbCvAnnonce);
 		sl_panel1.putConstraint(SpringLayout.NORTH, formattedTextFieldNbAnnonces, -35, SpringLayout.NORTH, formattedTextFieldNbCvAnnonce);
 		sl_panel1.putConstraint(SpringLayout.SOUTH, formattedTextFieldNbAnnonces, -7, SpringLayout.NORTH, formattedTextFieldNbCvAnnonce);
 		sl_panel1.putConstraint(SpringLayout.NORTH, formattedTextFieldNbCvAnnonce, -46, SpringLayout.NORTH, btnRandomisation);
@@ -686,7 +686,7 @@ public class GUI {
 		
 		
 		textFieldTemplateLM = new JTextField();
-		sl_panel1.putConstraint(SpringLayout.EAST, lblTemplatesDeLm, -6, SpringLayout.WEST, textFieldTemplateLM);
+		sl_panel1.putConstraint(SpringLayout.EAST, lblTemplatesDeLm, -16, SpringLayout.WEST, textFieldTemplateLM);
 		textFieldTemplateLM.setBackground(Color.decode("#d15050"));
 		sl_panel1.putConstraint(SpringLayout.WEST, textFieldTemplateLM, 686, SpringLayout.WEST, panel1);
 		sl_panel1.putConstraint(SpringLayout.EAST, textFieldTemplateLM, -201, SpringLayout.EAST, panel1);
@@ -834,7 +834,7 @@ public class GUI {
 		panel2.add(btnPrcdent);
 		
 		
-		JButton btnGnrer = new JButton("Générer les CV");
+		JButton btnGnrer = new JButton("<html>\r\n<center>\r\nGénérer<br>\r\nles CV\r\n</center>\r\n</html>");
 		btnGnrer.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -873,6 +873,21 @@ public class GUI {
 		sl_panel2.putConstraint(SpringLayout.NORTH, lblPage2Title, 10, SpringLayout.NORTH, panel2);
 		sl_panel2.putConstraint(SpringLayout.WEST, lblPage2Title, 450, SpringLayout.WEST, panel2);
 		panel2.add(lblPage2Title);
+		
+		JButton btnGnrer_1 = new JButton("<html>\r\n<center>\r\nGénérer<br>\r\nles PDF\r\n</center>\r\n</html>");
+		btnGnrer_1.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				testing.createPdf();
+			}
+		});
+		sl_panel2.putConstraint(SpringLayout.NORTH, btnGnrer_1, 0, SpringLayout.NORTH, btnPrcdent);
+		sl_panel2.putConstraint(SpringLayout.WEST, btnGnrer_1, -158, SpringLayout.WEST, btnGnrer);
+		sl_panel2.putConstraint(SpringLayout.SOUTH, btnGnrer_1, 0, SpringLayout.SOUTH, btnPrcdent);
+		sl_panel2.putConstraint(SpringLayout.EAST, btnGnrer_1, -43, SpringLayout.WEST, btnGnrer);
+		panel2.add(btnGnrer_1);
+		/*TODO bouton caché car convertion en pdf non fonctionnelle*/
+		btnGnrer_1.setVisible(false);
 		
 		
 
