@@ -63,9 +63,9 @@ public class UnixProcessManager implements ProcessManager {
         execute("/bin/kill", "-KILL", pid);
     }
 
-    private List<String> execute(String... command) throws IOException {
+    @SuppressWarnings("deprecation")
+	private List<String> execute(String... command) throws IOException {
         Process process = new ProcessBuilder(command).start();
-        @SuppressWarnings("unchecked")
         List<String> lines = IOUtils.readLines(process.getInputStream());
         return lines;
     }

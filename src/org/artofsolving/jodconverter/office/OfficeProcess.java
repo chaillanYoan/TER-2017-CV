@@ -271,7 +271,7 @@ class OfficeProcess {
         }
     }
 
-    private File getInstanceProfileDir(@SuppressWarnings("hiding") UnoUrl unoUrl) {
+    private File getInstanceProfileDir(UnoUrl unoUrl) {
         String dirName = ".jodconverter_" + unoUrl.getAcceptString().replace(',', '_').replace('=', '-');
         dirName = dirName + "_" + Thread.currentThread().getId();
         return new File(System.getProperty("java.io.tmpdir"), dirName);
@@ -329,7 +329,8 @@ class OfficeProcess {
         }
     }
 
-    private void addBasisAndUrePaths(ProcessBuilder processBuilder) throws IOException {
+    @SuppressWarnings("deprecation")
+	private void addBasisAndUrePaths(ProcessBuilder processBuilder) throws IOException {
         File ureBin = null;
         File basisProgram = null;
         // see

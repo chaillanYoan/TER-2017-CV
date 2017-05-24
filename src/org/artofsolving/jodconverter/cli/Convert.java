@@ -42,6 +42,7 @@ import org.json.JSONException;
 /**
  * Command line interface executable.
  */
+@SuppressWarnings("deprecation")
 public class Convert {
 
     public static final int STATUS_OK = 0;

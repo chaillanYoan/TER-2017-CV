@@ -31,7 +31,8 @@ import org.json.JSONObject;
 
 public class JsonDocumentFormatRegistry extends SimpleDocumentFormatRegistry {
 
-    public JsonDocumentFormatRegistry(InputStream input) throws JSONException, IOException {
+    @SuppressWarnings("deprecation")
+	public JsonDocumentFormatRegistry(InputStream input) throws JSONException, IOException {
         readJsonArray(IOUtils.toString(input));
     }
 

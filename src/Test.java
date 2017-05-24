@@ -101,8 +101,11 @@ public class Test {
 	 * @return tableau de données en entrée + une colonne avec le numéro d'annonce
 	 */
 	public String[][] returnOfGenerate(String[][] s, int nbOffres, int CVparOffre){
+		//on crée un tableau avec le deuxième [] ayant une case en plus pour le numero d'annonce
 		String [][] t = new String[s.length][(s[0].length)+1];
 		
+		
+		//on va ensuite copié le tableau de base dans le deuxième, mais décalé d'une case
 		int num = 1;
 		int cpt = 0;
 		for(int i=1; i<s.length; i++){
@@ -139,40 +142,32 @@ public class Test {
         ArrayList<Integer> listeCV;
         ArrayList<Integer> listeLM;
         
+        //si les annonces peuvent contenir différents types,
         if(!annonceMemeQualite){
+        	
+        	//on mélange avec Collections.shuffle en utilisant(ou non) la seed fournit par l'utilisateur
+        	//et en utilisant exactement la même chose si les CV et LM doivent être liés
         	if(seed > 0){
             	if(liaisonCV_LM){
             		Collections.shuffle(templatesLM,new Random(seed));
             		Collections.shuffle(templates,new Random(seed));
             	}
             	else{
-	                //System.out.println("liste templates : "+templates);
 	                Collections.shuffle(templates,new Random(seed));
 	                Collections.shuffle(templatesLM,new Random(3*seed));
-	                //System.out.println("seed:"+(seed+i)+" - liste templates shuffled : "+templates);
             	}
             }
             else{
             	if(liaisonCV_LM){
             		int rnd = new Random().nextInt();
-            		//System.out.println("liste templates : "+templates);
-            		//System.out.println("liste templates LM: "+templatesLM);
             		
             		Collections.shuffle(templatesLM,new Random(rnd));
             		Collections.shuffle(templates,new Random(rnd));
             		
-            		
-            		//System.out.println("no seed - liste templates shuffled : "+templates);
-            		//System.out.println("no seed - liste templates LM shuffled : "+templatesLM);
-            		
             	}
             	else{
-	                //System.out.println("no liaison - liste templates : "+templates);
-            		//System.out.println("no liaison - liste templates LM: "+templatesLM);
 	                Collections.shuffle(templates,new Random());
 	                Collections.shuffle(templatesLM,new Random());
-	                //System.out.println("no liaison - no seed - liste templates shuffled : "+templates);
-            		//System.out.println("no liaison - no seed - liste templates LM shuffled : "+templatesLM);
             	}
             }
         	
@@ -185,8 +180,9 @@ public class Test {
         	if(liaisonCV_LM){
         		System.out.println("+annonceMemeQualite liste templates : "+templates);
 	        	listeCV = CreerListeDeMemeQualitee(templates, nbCvParOffre, seed, nbOffres, false);
+	        	
 	        	System.out.println("+annonceMemeQualite liste templates LM: "+templatesLM);
-	        	//on donne la listes de CV, mais la fonction utilisera templates.linkedLM
+	        	//on donne la listes de CV, mais on utilisera par la suite : templates.linkedLM
 	        	listeLM = CreerListeDeMemeQualitee(templates, nbCvParOffre, seed, nbOffres, true);
         	}
         	else{
@@ -233,7 +229,8 @@ public class Test {
             	makePdf = true;
             else
             	makePdf = false;
-            	
+            
+            
             cvc.createCV(numAnnonce, i+1, path, this.outputFolder, makePdf);
             cvc.createLM(numAnnonce, i+1, pathLM, this.outputFolder, liaisonCV_LM, path, makePdf);
            

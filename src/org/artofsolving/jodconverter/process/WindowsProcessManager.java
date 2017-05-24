@@ -49,10 +49,10 @@ public class WindowsProcessManager implements ProcessManager {
         }
     }
 
-    private List<String> execute(String... command) throws IOException {
+    @SuppressWarnings("deprecation")
+	private List<String> execute(String... command) throws IOException {
         Process process = new ProcessBuilder(command).start();
         process.getOutputStream().close(); // don't wait for stdin
-        @SuppressWarnings("unchecked")
         List<String> lines = IOUtils.readLines(process.getInputStream());
         try {
             process.waitFor();

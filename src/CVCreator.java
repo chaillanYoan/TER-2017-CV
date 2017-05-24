@@ -283,27 +283,32 @@ public class CVCreator {
 	 * 
 	 **/
 	public static String creatOutputName(String templateName, String nom, String prenom){
-		String outputName;
-		
-		if(templateName.compareTo("P_NOM.doc") == 0 || templateName.compareTo("P_NOM_LM.doc") == 0){
-			outputName = prenom.substring(0, 1).toUpperCase()+"_"+nom.toUpperCase();
-		}
-		else if(templateName.compareTo("NOM.doc") == 0 || templateName.compareTo("NOM LM.doc") == 0){
-			outputName = nom.toUpperCase();
-		}
-		else if(templateName.compareTo("Prénom Nom.doc") == 0 || templateName.compareTo("Prénom Nom LM.doc") == 0){
-			outputName = prenom.substring(0, 1).toUpperCase()+prenom.substring(1, prenom.length()).toLowerCase()+" "+nom.substring(0, 1).toUpperCase()+nom.substring(1, nom.length()).toLowerCase();
-		}
-		else if(templateName.compareTo("Nom Prénom.doc") == 0 || templateName.compareTo("Nom Prénom LM.doc") == 0){
-			outputName = nom.substring(0, 1).toUpperCase()+nom.substring(1, nom.length()).toLowerCase()+" "+prenom.substring(0, 1).toUpperCase()+prenom.substring(1, prenom.length()).toLowerCase();
-		}
-		else{
-			outputName = prenom+" "+nom;
-			outputName.toLowerCase();
-		}
-		
-		return outputName+".doc";
-	}
+        StringBuilder outputName;
+        outputName = new StringBuilder(templateName);
+        //Basically looking for the index of strings to match on and replacing
+        int k = outputName.indexOf("P_NOM");
+        if(k >= 0){
+            outputName.replace(k, k+5, prenom.substring(0, 1).toUpperCase()+" "+nom.toUpperCase());
+        }
+        else{
+
+            k = outputName.indexOf("NOM");
+            if(k >= 0){
+                outputName.replace(k, k+3, nom.toUpperCase());
+            }
+            else if((k = outputName.indexOf("Nom")) >= 0){
+                outputName.replace(k, k+3, nom.substring(0, 1).toUpperCase()+nom.substring(1, nom.length()).toLowerCase());
+            }
+            k = outputName.indexOf("Prénom");
+            if(k >= 0){
+                outputName.replace(k, k+6, prenom.substring(0, 1).toUpperCase()+prenom.substring(1, prenom.length()).toLowerCase());
+            }
+
+        }
+
+
+        return outputName.toString();
+    }
 	
 	
 	
