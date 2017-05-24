@@ -180,10 +180,21 @@ public class Test {
         	listeLM = null;
         }
         else{
-        	System.out.println("liste templates : "+templates);
-        	System.out.println("liste templates LM: "+templatesLM);
-        	listeCV = CreerListeDeMemeQualitee(templates, nbCvParOffre, seed, nbOffres, false);
-        	listeLM = CreerListeDeMemeQualitee(templatesLM, nbCvParOffre, seed, nbOffres, true);
+        	//annonces de même type
+        	
+        	if(liaisonCV_LM){
+        		System.out.println("+annonceMemeQualite liste templates : "+templates);
+	        	listeCV = CreerListeDeMemeQualitee(templates, nbCvParOffre, seed, nbOffres, false);
+	        	System.out.println("+annonceMemeQualite liste templates LM: "+templatesLM);
+	        	//on donne la listes de CV, mais la fonction utilisera templates.linkedLM
+	        	listeLM = CreerListeDeMemeQualitee(templates, nbCvParOffre, seed, nbOffres, true);
+        	}
+        	else{
+	        	System.out.println("+annonceMemeQualite liste templates : "+templates);
+	        	listeCV = CreerListeDeMemeQualitee(templates, nbCvParOffre, seed, nbOffres, false);
+	        	System.out.println("+annonceMemeQualite liste templates LM: "+templatesLM);
+	        	listeLM = CreerListeDeMemeQualitee(templatesLM, nbCvParOffre, seed, nbOffres, true);
+        	}
         }
         	
         
@@ -200,9 +211,14 @@ public class Test {
             String pathLM = this.templatesLM.get(i%templatesLM.size()).filepath;
            
             if(annonceMemeQualite){
+            	if(liaisonCV_LM){
+            		path = this.templates.get(listeCV.get(i)).filepath;
+              	  	pathLM = this.templates.get(listeCV.get(i)).getLinkedLM().filepath;
+            	}
+            	else{
             	  path = this.templates.get(listeCV.get(i)).filepath;
             	  pathLM = this.templatesLM.get(listeLM.get(i)).filepath;
-                
+            	}
             }
             
             
@@ -246,6 +262,7 @@ public class Test {
                 return one.filename.compareTo(two.filename);
             }
         });
+    	
     	
     	System.out.println("---templateList : "+templateList);
         ArrayList<Integer> templatesValide = new ArrayList<Integer>();
@@ -314,43 +331,16 @@ public class Test {
 
         }
         return listeCV;
-        
-        
-        /*
-        //genere une liste de cv à generer
-        ArrayList<Integer> listeTemplate = new ArrayList<Integer>();
-        for(int i = 0; i < nbOffres; i++){
-        	int qualiteeChoisie = templatesValide.get(rd.nextInt(templatesValide.size()));
-        	
-        	//System.out.println("qualiteeChoisie : "+qualiteeChoisie+" templatesValide.size() "+templatesValide.size());
-            for(int j = 0; j < nbCvParOffre; j++){
-                int indexDuCV = 0;
-                for(int k = 0; k < qualiteeChoisie; k++){
-                    indexDuCV+=getAmount[k];
-                }
-                //choisis un des cv de la qualitée en question(valeur de 1 au nombre de cv de cette qualitée)
-                if(lettreMotiv){
-                	indexDuCV+= rd2.nextInt(getAmount[qualiteeChoisie]);
-                	
-                	//on passe une valeur de rd dans le vide, pour en être au même moment que si c'était un CV
-                	@SuppressWarnings("unused")
-					int x = rd.nextInt(getAmount[qualiteeChoisie]-1)+1;
-                }
-                else
-                	indexDuCV+= rd.nextInt(getAmount[qualiteeChoisie]);
-                
-                //System.out.println("indexduCV : "+indexDuCV);
-                listeTemplate.add(indexDuCV);
-            }
-        }
-        
-        System.out.println(">>>listeTemplate : "+listeTemplate);
-        return listeTemplate;*/
+      
     }
 	
 	
 	
-	
+	/**
+	 * Fonction pour convertir un 0doc en pdf
+	 * non fonctionnelle... 
+	 * 
+	 **/
     public void createPdf(){
     	Convert convertor = new Convert();
     	String path[] = {null, null};

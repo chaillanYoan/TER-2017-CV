@@ -21,7 +21,6 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -186,7 +185,21 @@ public class GUI {
 					Popup.pop(p,"Pas assez de templates de LM de même qualité.");
 				}
 				else{
-					System.out.println("pre test");
+					System.out.println("======pre test=====");
+					System.out.println("======+annonceMemeQualite liste templates : "+templates);
+		        	System.out.println("======+annonceMemeQualite liste templates LM: "+templatesLM);
+		        	
+		        	if(liaisonCV_LM){
+		        		//TODO liaison cv-lm : meme taille pour les 2 listes
+		        		
+		        		//on ajoute les template des LM dans le template des CV pour garder une trace de la liaison entre eux
+		        		System.out.println("templates.size():"+templates.size()+" templatesLM.size():"+templatesLM.size());
+		        		for(int i=0; i<templates.size(); i++){
+		        			System.out.println("i="+i);
+		        			templates.get(i).setLinkedLM(templatesLM.get(i));
+		        		}
+		        	}
+					
 					testing = new Test();
 					testing.init(templates, templatesLM, outputFolder, excelPath, liaisonCV_LM, annonceMemeQualite, seed);
 					String[][] t = null;

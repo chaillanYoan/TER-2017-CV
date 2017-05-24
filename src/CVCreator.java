@@ -127,7 +127,6 @@ public class CVCreator {
 		if(outputFileName.contains("/"))
 			new File(outputFileName.substring(0, outputFileName.lastIndexOf('/'))).mkdirs();
 		
-		System.out.println("CV outputFileName : "+outputFileName);
 		doc.write(new File(outputFileName));
 		 
 		doc.close(); 
@@ -209,6 +208,7 @@ public class CVCreator {
 		else
 			nameLM = nameLM.substring(nameLM.lastIndexOf('/'), nameLM.length());
 		
+		
 		outputFileName = outputPath+nameLM;
 		
 	
@@ -219,7 +219,6 @@ public class CVCreator {
 			new File(outputFileName.substring(0, outputFileName.lastIndexOf('/'))).mkdirs();
 		
 		String outputFileNameLm = outputFileName.replaceAll(".doc", " LM.doc");
-		System.out.println("LM outputFileName : "+outputFileNameLm);
 		doc.write(new File(outputFileNameLm));
 		doc.close(); 
 		
@@ -294,6 +293,9 @@ public class CVCreator {
 		}
 		else if(templateName.compareTo("Prénom Nom.doc") == 0 || templateName.compareTo("Prénom Nom LM.doc") == 0){
 			outputName = prenom.substring(0, 1).toUpperCase()+prenom.substring(1, prenom.length()).toLowerCase()+" "+nom.substring(0, 1).toUpperCase()+nom.substring(1, nom.length()).toLowerCase();
+		}
+		else if(templateName.compareTo("Nom Prénom.doc") == 0 || templateName.compareTo("Nom Prénom LM.doc") == 0){
+			outputName = nom.substring(0, 1).toUpperCase()+nom.substring(1, nom.length()).toLowerCase()+" "+prenom.substring(0, 1).toUpperCase()+prenom.substring(1, prenom.length()).toLowerCase();
 		}
 		else{
 			outputName = prenom+" "+nom;
