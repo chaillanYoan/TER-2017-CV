@@ -113,5 +113,9 @@ public class ExcelParser {
 	
 	
 	
+	public int getLigneLongue() {
+		return ligneLongue;
+	}
+	
 	
 }

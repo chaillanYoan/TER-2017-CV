@@ -75,10 +75,6 @@ public class CVCreator {
 	public void createCV(int numeroAnnonce, int nb, String templatePath, String outputFolder, boolean pdf) throws IOException{
 	    
 	   	System.out.println("Creation CV "+(nb));
-	   	
-	   	/*pour faire simple on remplace "telephone" par "telephone : 0632548654" au lieu de rajouter le numéro ÃƒÂ  la suite*/
-		//String tel = "Téléphone : "+tableur[nb][3]; // création de la ligne telephone
-		//String mail = "Mail : "+tableur[nb][4]; //creation de la lignee mail
 		
 		FileInputStream fis = new FileInputStream(templatePath);
 		POIFSFileSystem fs = new POIFSFileSystem(fis);
@@ -118,8 +114,22 @@ public class CVCreator {
 			}
 		} 
 		
-		//outputFileName = path/name.doc
-		String outputFileName = createOutputPath(numeroAnnonce,outputFolder,templatePath,tableur[nb][1],tableur[nb][0]);
+		/*on cherche les colonnes contetant le snom et prenoms*/
+        int prenom = -1;
+        int nom = -1;
+        for(int i = 0; i < ep.getLigneLongue();i++){
+            if(tableur[0][i].compareToIgnoreCase("prénom")==0)
+                prenom = i;
+            if(tableur[0][i].compareToIgnoreCase("prenom")==0)
+                prenom = i;
+            if(tableur[0][i].compareToIgnoreCase("nom")==0)
+                nom = i;
+        }
+        String outputFileName;
+        if(prenom != -1 && nom != - 1)
+            outputFileName = createOutputPath(numeroAnnonce,outputFolder,templatePath,tableur[nb][nom],tableur[nb][prenom]);
+        else
+            outputFileName = createOutputPath(numeroAnnonce,outputFolder,templatePath,tableur[nb][1],tableur[nb][0]);
 		
 		//creation des sous dossiers output
 		if(outputFileName.contains("\\"))
@@ -185,30 +195,41 @@ public class CVCreator {
 				 }
 			 } 
 		 } 
-		/*TODO recuperer dans des variables le nom et le prenom lors de la boucle for
-		 * pour les utiliser plus tard dans  createOutputPath()
-		 */
 		
-		
-		//outputFileName = path/name.doc
+		/*on cherche les colonnes contetant le snom et prenoms*/
+        int prenom = -1;
+        int nom = -1;
+        for(int i = 0; i < ep.getLigneLongue();i++){
+            if(tableur[0][i].compareToIgnoreCase("prénom")==0)
+                prenom = i;
+            if(tableur[0][i].compareToIgnoreCase("prenom")==0)
+                prenom = i;
+            if(tableur[0][i].compareToIgnoreCase("nom")==0)
+                nom = i;
+        }
+        /*si on ne trouve pas, on choisit les positions "standards" (prenom = tableur[][0], nom = tableur[][1]*/
+        if(prenom == -1 && nom == - 1){
+        	prenom = 0;
+        	nom = 1;
+        }
 		String outputFileName;
 			
 		//Les CV et LM sont liés, on doit créer la LM dans le meme dossier que le CV, on doit donc d'abord récuperer le type du CV
 		//contient le chemin de sortie du CV, donc où on doit créer la LM
-		String outputPath = createOutputPath(numeroAnnonce,outputFolder,templatePathCV,tableur[nb][1],tableur[nb][0]);
+		String outputPath = createOutputPath(numeroAnnonce,outputFolder,templatePathCV,tableur[nb][nom],tableur[nb][prenom]);
 		if(outputPath.contains("\\"))
 			outputPath = outputPath.substring(0, outputPath.lastIndexOf('\\'));
 		else
 			outputPath = outputPath.substring(0, outputPath.lastIndexOf('/'));
 		
 		//contient le chemin de sortie de la LM, donc son nom de sortie
-		String nameLM = outputFileName = createOutputPath(numeroAnnonce,outputFolder,templatePath,tableur[nb][1],tableur[nb][0]);
+		String nameLM = outputFileName = createOutputPath(numeroAnnonce,outputFolder,templatePath,tableur[nb][nom],tableur[nb][prenom]);
 		if(outputPath.contains("\\"))
 			nameLM = nameLM.substring(nameLM.lastIndexOf('\\'), nameLM.length());
 		else
 			nameLM = nameLM.substring(nameLM.lastIndexOf('/'), nameLM.length());
 		
-		
+
 		outputFileName = outputPath+nameLM;
 		
 	
@@ -218,14 +239,14 @@ public class CVCreator {
 		if(outputFileName.contains("/"))
 			new File(outputFileName.substring(0, outputFileName.lastIndexOf('/'))).mkdirs();
 		
-		String outputFileNameLm = outputFileName.replaceAll(".doc", " LM.doc");
-		doc.write(new File(outputFileNameLm));
+		//String outputFileNameLm = outputFileName.replaceAll(".doc", " LM.doc");
+		doc.write(new File(outputFileName));
 		doc.close(); 
 		
 		
 		
 		if(pdf)
-			LMdocToPdf.add(outputFileNameLm);
+			LMdocToPdf.add(outputFileName);
 	}
 
 	
@@ -288,7 +309,7 @@ public class CVCreator {
         //Basically looking for the index of strings to match on and replacing
         int k = outputName.indexOf("P_NOM");
         if(k >= 0){
-            outputName.replace(k, k+5, prenom.substring(0, 1).toUpperCase()+" "+nom.toUpperCase());
+            outputName.replace(k, k+5, prenom.substring(0, 1).toUpperCase()+"_"+nom.toUpperCase());
         }
         else{
 

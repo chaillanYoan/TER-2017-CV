@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Random;
 
 import javax.swing.UIManager;
 import java.awt.CardLayout;
@@ -199,17 +200,26 @@ public class GUI {
 		        			templates.get(i).setLinkedLM(templatesLM.get(i));
 		        		}
 		        	}
+		        	if(seed < 0){
+		        		Random r = new Random();
+		        		seed = (long)r.nextInt(100000);
+		        	}
+		        	System.out.println("=========================================seed = "+seed);
 					
 					testing = new Test();
 					testing.init(templates, templatesLM, outputFolder, excelPath, liaisonCV_LM, annonceMemeQualite, seed);
+					
+					
 					String[][] t = null;
 					try {
 						t = testing.generate(nombreAnnonces,nombreCvParAnnonce);
+						testing.create(nombreAnnonces, nombreCvParAnnonce, seed, false,(t[0].length));
+						
 					} catch (EncryptedDocumentException | InvalidFormatException | IOException e1) {
-						//Auto-generated catch block
+						//TODOAuto-generated catch block
 						e1.printStackTrace();
 					}
-					createTableRandom(t);
+					createTableRandom(testing.getTableauDeRetour());
 					cardLayout.show(frmTer.getContentPane(),"PANEL2");
 				}
 			}
@@ -852,7 +862,7 @@ public class GUI {
 			public void mouseClicked(MouseEvent e) {
 				System.out.println("Et là les CVs sont créés");
 				try {
-					testing.create(nombreAnnonces, nombreCvParAnnonce,seed);
+					testing.create(nombreAnnonces, nombreCvParAnnonce,seed,true,0);
 					Point p = frmTer.getLocation();
 					Popup.pop(p,"Création des CV et LM terminée !");
 				} catch (IOException e1) {
